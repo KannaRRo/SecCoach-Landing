@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Acme Sp. z o.o. — Symulacja bezpieczeństwa (landing edukacyjny)</title>
+  <meta name="description" content="Edukacyjny landing po kliknięciu w symulacyjny link bezpieczeństwa. Uczy rozpoznawać podejrzane wiadomości i linki." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect rx='12' width='64' height='64' fill='%230ea5a6'/%3E%3Cpath d='M16 40 L32 12 L48 40 Z' fill='white'/%3E%3C/svg%3E">
+  <meta property="og:title" content="Symulacja bezpieczeństwa — landing edukacyjny">
+  <meta property="og:description" content="To była symulacja. Zobacz, na co uważać i jak zgłaszać podejrzane wiadomości.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB...">
+  <style>
+    :root{
+      --bg:#0c1222; --bg2:#0a1020; --card:#0f172a; --text:#e6eef6; --muted:#9fb1bd;
+      --accent:#34d399; --accent2:#0ea5a6; --danger:#7f1d1d; --focus:#93c5fd;
+      --ring:0 0 0 3px rgba(147,197,253,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#070d1a 0%, #0b1326 100%);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    a{color:inherit}
+    a:focus, button:focus{outline:none; box-shadow:var(--ring)}
+    .container{max-width:1040px;margin:0 auto;padding:20px}
+    header.site{background:linear-gradient(90deg,#081328,#061022);border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{height:44px;width:44px;border-radius:8px;background:#0a1220;padding:6px;display:grid;place-items:center}
+    .logo svg{width:100%;height:100%}
+    .brand h1{margin:0;font-size:18px}
+    .brand small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    nav.menu{display:flex;gap:18px;align-items:center}
+    nav.menu a, nav.menu button{font-size:14px;color:#cfe6f2;opacity:.9;text-decoration:none;background:transparent;border:1px solid rgba(255,255,255,.06);padding:8px 12px;border-radius:8px;cursor:pointer}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);font-size:13px;color:var(--muted);margin:14px 0}
+    .pill b{color:#eafff8}
+    main{margin-top:16px}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.05);border-radius:14px;padding:18px}
+    h2{margin:0 0 10px;font-size:20px}
+    p{margin:8px 0}
+    .badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .badge{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);padding:6px 10px;border-radius:999px;font-size:12px;color:var(--muted)}
+    .tips{display:grid;gap:10px}
+    .tip{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);padding:10px;border-radius:10px}
+    .tip strong{display:block}
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,.08);padding:10px 14px;border-radius:10px;color:inherit;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent2),var(--accent));color:#06211f;border:none}
+    .btn.danger{background:var(--danger);border:none}
+    .muted{color:var(--muted)}
+    .admin{margin-top:16px}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:8px;border-bottom:1px solid rgba(255,255,255,.06);text-align:left}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+    footer.site{margin-top:18px;color:var(--muted);font-size:13px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0a1528;border:1px solid rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+    @media (prefers-reduced-motion:no-preference){
+      .fade{animation:fade .3s ease-out both}
+      @keyframes fade{from{opacity:.001;transform:translateY(4px)} to{opacity:1;transform:none}}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site" role="banner">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect rx="12" width="64" height="64" fill="#0ea5a6"/><path d="M16 40 L32 12 L48 40 Z" fill="white"/></svg>
+        </div>
+        <div>
+          <h1>Acme Sp. z o.o.</h1>
+          <small>Rozwiązania logistyczne • Intranet</small>
+        </div>
+      </div>
+      <nav class="menu" aria-label="Główne menu">
+        <a href="#" aria-disabled="true">O nas</a>
+        <a href="#" aria-disabled="true">Usługi</a>
+        <a href="#" aria-disabled="true">Kariera</a>
+        <a href="#" aria-disabled="true">Kontakt</a>
+        <button type="button" aria-disabled="true" title="Niedostępne w symulacji">Zaloguj</button>
+      </nav>
+    </header>
+
+    <div id="modePill" class="pill" role="status" aria-live="polite">
+      Tryb: <b id="modeLabel">DEMO</b> • Parametry: <span class="muted"><span id="pCampaign">campaign=—</span>, <span id="pScenario">scenario=—</span>, <span id="pUid">uid=—</span></span>
+    </div>
+
+    <main id="main" class="grid fade" role="main">
+      <section class="card" aria-labelledby="edTitle">
+        <h2 id="edTitle">To była symulacja — nauka rozpoznawania podejrzanych wiadomości</h2>
+        <p class="muted">Dziękujemy. Ten ekran pojawia się po kliknięciu w **przykładowy** link treningowy. Poniżej — krótkie wskazówki bezpieczeństwa.</p>
+        <div class="badges" id="metaBadges"></div>
+        <div class="tips" role="region" aria-label="Sygnały ostrzegawcze">
+          <div class="tip"><strong>Nietypowa domena nadawcy</strong><span class="muted">Adres e-mail lub domena „podszywa się” pod firmę.</span></div>
+          <div class="tip"><strong>Presja czasu i pilne wezwania</strong><span class="muted">„Natychmiast, pilne, grozi blokada” — to techniki socjotechniki.</span></div>
+          <div class="tip"><strong>Link maskowany</strong><span class="muted">Najedź myszką: czy adres docelowy wygląda znajomo i bezpiecznie?</span></div>
+          <div class="tip"><strong>Nieoczekiwany załącznik</strong><span class="muted">ZIP/EXE/DOCM to częsty wektor ataku.</span></div>
+          <div class="tip"><strong>Prośby poza procedurą</strong><span class="muted">Niespodziewane przelewy, karty podarunkowe, ominięcie systemu obiegu dokumentów.</span></div>
+        </div>
+        <div class="actions">
+          <button class="btn primary" id="learnBtn">Szybka lekcja (2 min)</button>
+          <button class="btn" id="reportBtn">Zgłoś podejrzaną wiadomość</button>
+        </div>
+        <p class="muted" style="margin-top:10px">Nie prosimy o hasła. Zapisujemy jedynie anonimowe metadane kliknięcia dla celów edukacyjnych projektu.</p>
+      </section>
+
+      <aside class="card" aria-labelledby="adminTitle">
+        <h2 id="adminTitle">Panel (lokalny) — wyniki</h2>
+        <p class="muted">Dostępny po otwarciu z parametrem <span class="kbd">?admin=1</span>. W trybie DEMO możesz zasymulować dane.</p>
+        <div class="filters">
+          <label>Filtr campaign:
+            <select id="fCampaign">
+              <option value="">(wszystkie)</option>
+              <option>pre</option><option>post</option>
+            </select>
+          </label>
+          <label>Filtr scenario:
+            <select id="fScenario">
+              <option value="">(wszystkie)</option>
+              <option>invoice</option><option>password</option><option>delivery</option>
+            </select>
+          </label>
+          <button class="btn" id="refreshBtn">Odśwież</button>
+        </div>
+        <div class="badges">
+          <span class="badge">Rekordy: <b id="statRows">0</b></span>
+          <span class="badge">Unikalne UID: <b id="statUids">0</b></span>
+        </div>
+        <div style="max-height:280px;overflow:auto;border-radius:8px;border:1px solid rgba(255,255,255,.05)">
+          <table id="logTable" aria-live="polite">
+            <thead><tr><th>ts</th><th>uid</th><th>campaign</th><th>scenario</th><th>ua</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="actions" style="margin-top:10px">
+          <button class="btn" id="exportCsv">Eksport CSV</button>
+          <button class="btn danger" id="clearData">Wyczyść dane (local)</button>
+          <button class="btn" id="simulate50" title="Tylko w DEMO" disabled>Symuluj 50 wyników</button>
+        </div>
+        <p class="muted" id="adminHint"></p>
+      </aside>
+    </main>
+
+    <footer class="site" role="contentinfo">
+      <span>© 2025 Acme Sp. z o.o. • To jest <strong>symulacja edukacyjna</strong>.</span>
+      <span><a href="#" aria-disabled="true" class="muted" title="Polityka w wersji symulacyjnej">Polityka prywatności (symulacja)</a></span>
+    </footer>
+  </div>
+
+<script>
+/* ===== Utility helpers ===== */
+const Q = new URLSearchParams(location.search);
+const MODE = (Q.get('mode')||'demo').toLowerCase(); // demo | real
+const IS_ADMIN = Q.get('admin') === '1';
+const uid = (Q.get('uid') || 'anon').trim();
+const campaign = (Q.get('campaign') || 'unknown').trim();
+const scenario = (Q.get('scenario') || 'generic').trim();
+const STORAGE_KEY = 'seccoach_clicks_v1';
+
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;'}[c]));
+
+/* ===== Mode banner + params ===== */
+(function initMode(){
+  $('#modeLabel').textContent = (MODE==='real'?'REAL':'DEMO');
+  $('#pCampaign').textContent = 'campaign='+campaign;
+  $('#pScenario').textContent  = 'scenario='+scenario;
+  $('#pUid').textContent       = 'uid='+uid;
+  const mb = $('#metaBadges');
+  mb.innerHTML = `
+    <span class="badge">Campaign: ${escapeHtml(campaign)}</span>
+    <span class="badge">Scenario: ${escapeHtml(scenario)}</span>
+    <span class="badge">UID: ${escapeHtml(uid)}</span>
+    <span class="badge">Czas: ${new Date().toLocaleString()}</span>
+  `;
+})();
+
+/* ===== Local storage API ===== */
+function readAll(){
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch { return []; }
+}
+function saveAll(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+function addEntry(e){ const arr = readAll(); arr.push(e); saveAll(arr); }
+
+/* ===== Record the click once per page load ===== */
+(function recordClick(){
+  const entry = {
+    ts: new Date().toISOString(),
+    uid, campaign, scenario,
+    ua: navigator.userAgent,
+    // opcjonalnie: ref: document.referrer
+  };
+  addEntry(entry);
+})();
+
+/* ===== Admin panel init ===== */
+(function initAdmin(){
+  const hint = $('#adminHint');
+  if(!IS_ADMIN){
+    hint.textContent = 'Wskazówka: dodaj ?admin=1 do adresu URL, aby zobaczyć szczegóły.';
+  } else {
+    hint.textContent = 'Panel aktywny. Użyj filtrów, eksportu CSV lub symulacji.';
+  }
+  // DEMO only: enable simulate
+  if(MODE==='demo' && IS_ADMIN){
+    $('#simulate50').disabled = false;
+  }
+  renderTable();
+})();
+
+/* ===== Table render + stats with filters ===== */
+function applyFilters(rows){
+  const fC = $('#fCampaign').value || '';
+  const fS = $('#fScenario').value || '';
+  return rows.filter(r => (!fC || r.campaign===fC) && (!fS || r.scenario===fS));
+}
+function renderTable(){
+  const tbody = $('#logTable tbody');
+  const rows = readAll();
+  const filtered = applyFilters(rows).slice().reverse();
+  tbody.innerHTML = '';
+  for(const r of filtered){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${escapeHtml(r.ts)}</td>
+      <td>${escapeHtml(r.uid)}</td>
+      <td>${escapeHtml(r.campaign)}</td>
+      <td>${escapeHtml(r.scenario||'')}</td>
+      <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(r.ua||'')}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+  // stats
+  $('#statRows').textContent = filtered.length;
+  const uniq = new Set(filtered.map(r=>r.uid));
+  $('#statUids').textContent = uniq.size;
+}
+
+/* ===== Events ===== */
+$('#refreshBtn').addEventListener('click', renderTable);
+$('#fCampaign').addEventListener('change', renderTable);
+$('#fScenario').addEventListener('change', renderTable);
+
+$('#exportCsv').addEventListener('click', ()=>{
+  const rows = applyFilters(readAll());
+  if(!rows.length){ alert('Brak danych do eksportu'); return; }
+  const keys = ['ts','uid','campaign','scenario','ua'];
+  const esc = v => '"'+String(v??'').replace(/"/g,'""')+'"';
+  const csv = [keys.join(',')].concat(rows.map(r=>keys.map(k=>esc(r[k])).join(','))).join('\r\n');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), {href:url, download:`clicks_${new Date().toISOString().slice(0,10)}.csv`});
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+$('#clearData').addEventListener('click', ()=>{
+  if(!confirm('Na pewno wyczyścić wszystkie dane lokalne?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  renderTable();
+});
+
+$('#simulate50').addEventListener('click', ()=>{
+  if(MODE!=='demo'){ return alert('Symulacja dostępna tylko w trybie DEMO'); }
+  const campaigns = ['pre','post'];
+  const scenarios = ['invoice','password','delivery'];
+  const now = Date.now();
+  const rows = readAll();
+  for(let i=0;i<50;i++){
+    rows.push({
+      ts: new Date(now - Math.floor(Math.random()*1000*60*60*24*21)).toISOString(),
+      uid: 'sim-'+Math.floor(100000+Math.random()*900000),
+      campaign: campaigns[Math.random()<.5?0:1],
+      scenario: scenarios[Math.floor(Math.random()*scenarios.length)],
+      ua: 'SimAgent/1.0'
+    });
+  }
+  saveAll(rows);
+  renderTable();
+});
+
+$('#learnBtn').addEventListener('click', ()=>{
+  alert([
+    'Szybka lekcja (2 min):',
+    '1) Sprawdź nadawcę i domenę (najedź na adres e-mail).',
+    '2) Nie klikaj linków z nietypowymi domenami i literówkami.',
+    '3) Nie otwieraj niespodziewanych załączników.',
+    '4) Zgłaszaj podejrzane maile zgodnie z procedurą.'
+  ].join('\n'));
+});
+
+$('#reportBtn').addEventListener('click', ()=>{
+  const to = 'security@twojafirma.pl';
+  const subject = encodeURIComponent('Zgłoszenie podejrzanej wiadomości (symulacja)');
+  const body = encodeURIComponent('Dzień dobry,\n\nChciałbym zgłosić podejrzaną wiadomość. Kliknięcie pochodzi z symulacji edukacyjnej.\n\nPozdrawiam.');
+  location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+});
+</script>
+</body>
+</html>
