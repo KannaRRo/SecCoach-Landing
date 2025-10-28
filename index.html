@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SecCoach — Symulacja szkoleniowa</title>
 <meta name="description" content="Bezpieczna strona edukacyjna — nic złego się nie dzieje.">
+<!-- Chart.js z CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
   --bg:#0b1326; --panel:#0f1a34; --card:#0e1630;
@@ -20,8 +22,9 @@ body{
   background:linear-gradient(180deg,#081326,#0a1530); color:var(--text);
   padding-bottom: env(safe-area-inset-bottom);
 }
+h1,h2,h3{color:var(--text)}
 
-/* Sticky SIMULATION banner */
+/* Sticky banner */
 .sim-banner{
   position:fixed; left:0; right:0; top:0; z-index:1200;
   display:flex; align-items:center; justify-content:center; gap:8px;
@@ -98,7 +101,7 @@ footer{
 .modal-backdrop.show{display:flex}
 .modal{
   background:linear-gradient(180deg,#0e1b35,#0b162c); color:var(--text);
-  border:1px solid rgba(255,255,255,.08); border-radius:16px; max-width:720px; width:100%;
+  border:1px solid rgba(255,255,255,.08); border-radius:16px; max-width:760px; width:100%;
   box-shadow:var(--shadow); padding:18px; max-height:min(90vh,820px); overflow:auto;
 }
 .modal h2{margin:0 0 8px; font-size:20px}
@@ -107,6 +110,21 @@ footer{
 .badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#dfeafb;margin-right:8px}
 .badge.warn{border-color:rgba(245,158,11,.4); color:#ffd58a}
 .badge.danger{border-color:rgba(239,68,68,.4); color:#ffaaaa}
+
+/* Installer progress bar */
+.progress{height:12px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s linear}
+
+/* Report section */
+#report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;display:none}
+#report h2{text-align:center;margin:0 0 10px}
+.report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
+canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radius:12px;padding:10px}
+/* dodatkowy oddech dla mobile */
+@media (max-width:480px){
+  canvas{min-height:260px;}
+}
+.stats{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
 </style>
 </head>
 <body>
@@ -154,6 +172,9 @@ footer{
     <span>Odwiedziny (lokalnie): <b id="visits">0</b></span>
     <span class="pill">Symulacja</span>
   </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn primary" id="reportBtn">Raport (symulacja)</button>
+  </div>
   <div class="muted" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     <span class="pill">Autorzy</span>
     <span>Król Damian (54103)</span><span>•</span><span>Angelika Adamczewska (55914)</span>
@@ -161,71 +182,103 @@ footer{
   </div>
 </footer>
 
-<!-- Reusable modal container -->
+<!-- Report section -->
+<section id="report" aria-labelledby="repTitle">
+  <h2 id="repTitle">📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
+  <div class="report-grid">
+    <canvas id="barChart" aria-label="Wykres słupkowy — kliknięcia wg kategorii" role="img"></canvas>
+    <canvas id="lineChart" aria-label="Wykres liniowy — aktywność w czasie" role="img"></canvas>
+    <canvas id="pieChart" aria-label="Wykres kołowy — udział procentowy" role="img"></canvas>
+  </div>
+  <div class="stats">
+    <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
+    <p>🔹 Liczba zdarzeń: <b id="statEvents">0</b></p>
+    <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+      <button class="btn" id="exportCsv">Eksport CSV</button>
+      <button class="btn" id="resetBtn">Reset symulacji</button>
+    </div>
+  </div>
+</section>
+
+<!-- Modal root -->
 <div class="modal-backdrop" id="modalRoot" aria-modal="true" role="dialog" aria-live="polite"></div>
 
 <script>
-/* --- Banner offset var --- */
+/* ---------- Helpers & constants ---------- */
+const KEY_VIS='seccoach_visits';
+const KEY_LOG='seccoach_log'; // tablica zdarzeń {type, when, note?}
+function logEvent(type, note){
+  const arr = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
+  arr.push({ type, when: new Date().toISOString(), ...(note?{note}: {}) });
+  localStorage.setItem(KEY_LOG, JSON.stringify(arr));
+}
+function fmtPL(dt){ return dt.toLocaleString('pl-PL'); }
+
+/* ---------- Banner offset ---------- */
 (function(){
   const b=document.getElementById('simBanner');
-  function setH(){document.documentElement.style.setProperty('--banner-h',(b?b.offsetHeight:0)+'px');}
-  setH(); addEventListener('resize',setH);
+  function setH(){ document.documentElement.style.setProperty('--banner-h',(b?b.offsetHeight:0)+'px'); }
+  setH(); addEventListener('resize', setH);
 })();
 
-/* --- Clock --- */
+/* ---------- Clock ---------- */
 function updateClock(){
-  const now=new Date(); const pad=n=>String(n).padStart(2,'0');
-  document.getElementById('clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-  document.getElementById('clockDate').textContent = now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const now=new Date(), pad=n=>String(n).padStart(2,'0');
+  document.getElementById('clock').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  document.getElementById('clockDate').textContent=now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
 updateClock(); setInterval(updateClock,1000);
 
-/* --- Visits counter (local) --- */
+/* ---------- Visits counter ---------- */
 (function(){
-  const KEY='seccoach_visits';
-  let n=parseInt(localStorage.getItem(KEY)||'0',10); if(isNaN(n)) n=0; n+=1;
-  localStorage.setItem(KEY,String(n));
-  document.getElementById('visits').textContent = n;
+  let v=parseInt(localStorage.getItem(KEY_VIS)||'0',10); if(isNaN(v)) v=0; v++;
+  localStorage.setItem(KEY_VIS, String(v));
+  document.getElementById('visits').textContent=v;
+  logEvent('visit');
 })();
 
-/* --- Modal utilities --- */
+/* ---------- Modal utils ---------- */
 const modalRoot=document.getElementById('modalRoot');
 let modalOpen=false;
 function openModal(html, onOpen){
   modalRoot.innerHTML = `<div class="modal">${html}</div>`;
-  modalRoot.classList.add('show');
-  modalOpen=true;
+  modalRoot.classList.add('show'); modalOpen=true;
   if(typeof onOpen==='function') onOpen(modalRoot.querySelector('.modal'));
   modalRoot.onclick=(e)=>{ if(e.target===modalRoot) closeModal(); };
 }
 function closeModal(){
-  modalRoot.classList.remove('show');
-  modalRoot.innerHTML='';
-  modalOpen=false;
+  modalRoot.classList.remove('show'); modalRoot.innerHTML=''; modalOpen=false;
 }
 
-/* --- Intro calming modal (shows immediately) --- */
+/* ---------- Intro modal (immediate) ---------- */
 function showIntro(){
   openModal(`
     <h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2>
     <p class="muted">
-      Ta witryna służy nauce bezpiecznych zachowań. <br>
-      W prawdziwym życiu: sprawdzaj nadawcę, nie instaluj plików z maila, zgłaszaj podejrzane sytuacje do IT.
+      W ramach ćwiczeń uczysz się bezpiecznych zachowań online.<br>
+      Zawsze weryfikuj nadawcę, nie instaluj plików z maila i zgłaszaj podejrzane sytuacje do IT.
     </p>
     <div class="actions">
       <button class="btn primary" id="introOk">Rozumiem</button>
     </div>
   `, (modal)=>{
-    modal.querySelector('#introOk').addEventListener('click', closeModal);
+    modal.querySelector('#introOk').addEventListener('click', ()=>{ closeModal(); });
   });
+  logEvent('intro_shown');
 }
 
-/* --- Installer simulation modal (with two buttons) --- */
+/* ---------- Installer simulation (with progress & two buttons) ---------- */
+let installerTimer=null, installerProgress=0, lastLoggedBucket=-1;
 function showInstaller(){
-  const html=`
+  openModal(`
     <span class="badge warn">Symulacja</span>
     <h2>Aktualizacja systemu — wymagane działanie</h2>
     <p class="muted">Komputer wymaga natychmiastowej instalacji pakietu bezpieczeństwa. Czy chcesz kontynuować?</p>
+    <div class="progress" aria-label="Postęp instalacji (symulacja)">
+      <div class="bar" id="installBar" style="width:0%"></div>
+    </div>
+    <small class="muted">Postęp: <b id="installPct">0%</b></small>
     <ul class="muted" style="margin-left:18px">
       <li>Źródło: <b>niezweryfikowane</b> (to tylko test szkoleniowy).</li>
       <li>Dobra praktyka: instaluj aktualizacje wyłącznie z oficjalnych źródeł.</li>
@@ -234,19 +287,40 @@ function showInstaller(){
       <button class="btn" id="reportIt">Zgłoś incydent do IT</button>
       <button class="btn primary" id="install">Zainstaluj</button>
     </div>
-  `;
-  openModal(html,(modal)=>{
+  `,(modal)=>{
+    const bar = modal.querySelector('#installBar');
+    const pct = modal.querySelector('#installPct');
+    installerProgress = 0; lastLoggedBucket = -1;
+    installerTimer = setInterval(()=>{
+      installerProgress += Math.floor(Math.random()*7)+3; // 3–9% co 200ms
+      if(installerProgress>100) installerProgress=100;
+      bar.style.width = installerProgress+'%';
+      pct.textContent = installerProgress+'%';
+      // log tylko co 20% (0,20,40,60,80,100)
+      const bucket = Math.floor(installerProgress/20);
+      if(bucket>lastLoggedBucket){
+        logEvent('installer_progress', String(bucket*20));
+        lastLoggedBucket = bucket;
+      }
+      if(installerProgress===100){ clearInterval(installerTimer); installerTimer=null; }
+    }, 200);
+
     modal.querySelector('#install').addEventListener('click', ()=>{
+      if(installerTimer){ clearInterval(installerTimer); installerTimer=null; }
       closeModal();
+      logEvent('installer_install');
       openModal(`
         <span class="badge danger">Błąd</span>
         <h2>To nie był dobry wybór</h2>
-        <p class="muted">W realnej sytuacji instalowanie oprogramowania z nieznanego źródła to ryzyko. Zawsze weryfikuj nadawcę i zgłaszaj wątpliwości do IT.</p>
+        <p class="muted">Instalowanie oprogramowania z nieznanego źródła niesie ryzyko. Zawsze weryfikuj nadawcę i zgłaszaj wątpliwości do IT.</p>
         <div class="actions"><button class="btn primary" id="ack">OK</button></div>
       `,(m)=>m.querySelector('#ack').addEventListener('click', closeModal));
     });
+
     modal.querySelector('#reportIt').addEventListener('click', ()=>{
+      if(installerTimer){ clearInterval(installerTimer); installerTimer=null; }
       closeModal();
+      logEvent('installer_report');
       openModal(`
         <span class="badge">Gratulacje</span>
         <h2>Świetnie — to właściwa reakcja</h2>
@@ -255,20 +329,19 @@ function showInstaller(){
       `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
     });
   });
+  logEvent('installer_shown');
 }
 
-/* --- Queue second modal 8s after page load, but don't overlap --- */
+/* ---------- Sequence: intro immediately, installer at +8s ---------- */
 let secondModalDue=false;
-setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); }, 8000);
-
-/* --- Show intro immediately; when intro closes and time has passed, show installer --- */
 showIntro();
-const observer=new MutationObserver(()=>{
-  if(!modalOpen && secondModalDue){ showInstaller(); observer.disconnect(); }
+setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); }, 8000);
+const modalObserver=new MutationObserver(()=>{
+  if(!modalOpen && secondModalDue){ showInstaller(); modalObserver.disconnect(); }
 });
-observer.observe(modalRoot,{attributes:true,attributeFilter:['class']});
+modalObserver.observe(modalRoot,{attributes:true,attributeFilter:['class']});
 
-/* --- Educational modals for nav --- */
+/* ---------- Educational modals for nav ---------- */
 function showEasy(){
   openModal(`
     <span class="badge">Poziom: łatwy</span>
@@ -280,6 +353,7 @@ function showEasy(){
     </ul>
     <div class="actions"><button class="btn primary" id="ok">OK</button></div>
   `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+  logEvent('nav_easy');
 }
 function showMedium(){
   openModal(`
@@ -289,10 +363,11 @@ function showMedium(){
     <ul class="muted" style="margin-left:18px">
       <li>subdomeny udające markę (np. <code>login.bank.example.com</code> vs <code>bank.com</code>),</li>
       <li>dziwne rozszerzenia plików (<code>.exe</code>, <code>.js</code>, <code>.scr</code>),</li>
-      <li>HTTPS nie gwarantuje wiarygodności nadawcy.</li>
+      <li>HTTPS ≠ wiarygodność nadawcy.</li>
     </ul>
     <div class="actions"><button class="btn primary" id="ok">OK</button></div>
   `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+  logEvent('nav_medium');
 }
 function showHard(){
   openModal(`
@@ -300,18 +375,107 @@ function showHard(){
     <h2>Co zrobić po kliknięciu w złośliwy link?</h2>
     <ol class="muted" style="margin-left:18px">
       <li><b>Odłącz</b> urządzenie od sieci (Wi-Fi/kabel).</li>
-      <li><b>Nie</b> restartuj — zgódź się na analizę IT.</li>
-      <li>Zrób zrzut ekranu, <b>zanotuj godzinę</b>, zachowaj maila jako dowód.</li>
-      <li><b>Natychmiast zgłoś</b> incydent do działu IT / CSIRT.</li>
+      <li><b>Nie</b> restartuj — przekaż do analizy IT.</li>
+      <li>Zrób zrzut ekranu i <b>zanotuj godzinę</b>.</li>
+      <li><b>Natychmiast zgłoś</b> incydent do IT / CSIRT.</li>
     </ol>
     <div class="actions"><button class="btn primary" id="ok">Zapamiętam</button></div>
   `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+  logEvent('nav_hard');
 }
-
-/* --- Bind nav --- */
 document.getElementById('navEasy').addEventListener('click',(e)=>{e.preventDefault(); showEasy();});
 document.getElementById('navMedium').addEventListener('click',(e)=>{e.preventDefault(); showMedium();});
 document.getElementById('navHard').addEventListener('click',(e)=>{e.preventDefault(); showHard();});
+
+/* ---------- Report (Chart.js) ---------- */
+let barChart,lineChart,pieChart;
+function computeStats(){
+  const logs = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
+  const counts = { report:0, install:0, easy:0, medium:0, hard:0 };
+  logs.forEach(r=>{
+    if(r.type==='installer_report') counts.report++;
+    else if(r.type==='installer_install') counts.install++;
+    else if(r.type==='nav_easy') counts.easy++;
+    else if(r.type==='nav_medium') counts.medium++;
+    else if(r.type==='nav_hard') counts.hard++;
+  });
+  const byMinute = new Map();
+  logs.forEach(r=>{
+    const t = new Date(r.when);
+    const key = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')+
+                ' '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+    byMinute.set(key,(byMinute.get(key)||0)+1);
+  });
+  const series = Array.from(byMinute.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
+  const last = logs.length ? fmtPL(new Date(logs[logs.length-1].when)) : '—';
+  return { counts, series, total: logs.length, last };
+}
+function drawCharts(){
+  const { counts, series, total, last } = computeStats();
+  // bar
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  if(barChart) barChart.destroy();
+  barChart = new Chart(barCtx,{
+    type:'bar',
+    data:{ labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
+           datasets:[{ label:'Liczba zdarzeń', data:[counts.report,counts.install,counts.easy,counts.medium,counts.hard],
+                       backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
+  });
+  // line
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  if(lineChart) lineChart.destroy();
+  lineChart = new Chart(lineCtx,{
+    type:'line',
+    data:{ labels:series.map(s=>s[0]), datasets:[{ label:'Aktywność w czasie', data:series.map(s=>s[1]), borderColor:'#18c4b8', tension:.3 }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a9b8c9'}}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
+  });
+  // pie
+  const pieCtx = document.getElementById('pieChart').getContext('2d');
+  if(pieChart) pieChart.destroy();
+  pieChart = new Chart(pieCtx,{
+    type:'pie',
+    data:{ labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
+           datasets:[{ data:[counts.report,counts.install,counts.easy,counts.medium,counts.hard],
+                       backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a9b8c9'}}}}
+  });
+  // stats
+  document.getElementById('statVisits').textContent = localStorage.getItem(KEY_VIS) || '0';
+  document.getElementById('statEvents').textContent = String(total);
+  document.getElementById('statLast').textContent   = last;
+}
+
+/* pokaż raport po kliknięciu i narysuj wykresy */
+document.getElementById('reportBtn').addEventListener('click', ()=>{
+  const sec = document.getElementById('report');
+  sec.style.display='block';
+  sec.scrollIntoView({behavior:'smooth'});
+  drawCharts();
+});
+
+/* Export CSV + Reset */
+document.getElementById('exportCsv').addEventListener('click', ()=>{
+  const arr = JSON.parse(localStorage.getItem(KEY_LOG)||'[]');
+  if(!arr.length){ alert('Brak danych do eksportu.'); return; }
+  const headers = ['type','when','note'];
+  const rows = arr.map(r => headers.map(h => `"${String(r[h]??'').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = Object.assign(document.createElement('a'), {href:url, download:'seccoach-raport-symulacja.csv'});
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('Wyczyścić lokalne dane (licznik i logi)?')){ localStorage.removeItem(KEY_LOG); localStorage.removeItem(KEY_VIS); location.reload(); }
+});
+
+/* ---------- Kickoff sequence ---------- */
+let secondModalReady=false;
+showIntro();
+setTimeout(()=>{ secondModalReady=true; if(!modalOpen) showInstaller(); }, 8000);
+const obs=new MutationObserver(()=>{ if(!modalOpen && secondModalReady){ showInstaller(); obs.disconnect(); }});
+obs.observe(modalRoot,{attributes:true,attributeFilter:['class']});
 </script>
 </body>
 </html>
