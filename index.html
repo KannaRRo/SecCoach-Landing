@@ -3,36 +3,43 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>SecCoach — Strona edukacyjna (symulacja)</title>
-<meta name="description" content="Symulacja szkoleniowa: bezpieczny test świadomości. Nic złego się nie dzieje.">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>SecCoach — Symulacja szkoleniowa</title>
+<meta name="description" content="Bezpieczna strona edukacyjna — nic złego się nie dzieje.">
 <style>
 :root{
-  --bg:#0b1326;--panel:#0f1a34;--card:#0e1630;
-  --text:#e7f0fa;--muted:#a9b8c9;
-  --accent:#18c4b8;--accent-2:#3ee6b9;
-  --warn:#f59e0b;--danger:#ef4444;
+  --bg:#0b1326; --panel:#0f1a34; --card:#0e1630;
+  --text:#e7f0fa; --muted:#a9b8c9;
+  --accent:#18c4b8; --accent-2:#3ee6b9; --danger:#ef4444; --warn:#f59e0b;
   --shadow:0 10px 30px rgba(2,6,23,.45);
-  --banner-h:40px;
+  --banner-h: 40px;
 }
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#081326,#0a1530);color:var(--text);}
-body{padding-bottom:env(safe-area-inset-bottom)}
-h2,h3{color:var(--text)}
-a{color:var(--accent)}
+html,body{height:100%}
+body{
+  margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
+  background:linear-gradient(180deg,#081326,#0a1530); color:var(--text);
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
-/* Banner */
+/* Sticky SIMULATION banner */
 .sim-banner{
-  position:fixed;left:0;right:0;top:0;z-index:1200;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:8px 12px;background:linear-gradient(90deg,rgba(24,196,184,.15),rgba(62,230,185,.15));
-  border-bottom:1px solid rgba(255,255,255,.12);color:#dff6f3;font-size:14px;line-height:1.3;
+  position:fixed; left:0; right:0; top:0; z-index:1200;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:8px 12px;
+  background:linear-gradient(90deg, rgba(24,196,184,.15), rgba(62,230,185,.15));
+  border-bottom:1px solid rgba(255,255,255,.12);
+  color:#dff6f3; font-size:14px; line-height:1.3;
   backdrop-filter:saturate(140%) blur(6px);
 }
 .sim-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(24,196,184,.5);background:rgba(24,196,184,.12);font-size:12px}
 
 /* Header */
-.site-header{position:sticky;top:var(--banner-h);z-index:1000;background:rgba(10,20,40,.85);border-bottom:1px solid rgba(255,255,255,.06);backdrop-filter:saturate(140%) blur(8px);}
+.site-header{
+  position:sticky; top:var(--banner-h); z-index:1000;
+  background:rgba(10,20,40,.85);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  backdrop-filter:saturate(140%) blur(8px);
+}
 .wrap{max-width:1100px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
 .logo{width:38px;height:38px;border-radius:9px;background:#0a1a33;display:grid;place-items:center}
@@ -41,149 +48,270 @@ a{color:var(--accent)}
 nav{margin-left:auto;display:flex;gap:10px;align-items:center}
 nav a{color:#dfeafb;text-decoration:none;font-size:14px;opacity:.9;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06)}
 nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
-.burger{display:none;margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.12);color:#dfeafb;border-radius:8px;padding:8px 10px}
-@media (max-width:760px){
-  nav{display:none;position:absolute;left:0;right:0;top:calc(var(--banner-h) + 56px);background:rgba(10,20,40,.98);padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
-  nav.open{display:flex;flex-direction:column}
-  .burger{display:block}
-}
 
 /* Main */
 main{max-width:1100px;margin:0 auto;padding:calc(18px + var(--banner-h)) 18px 18px}
 .hero{
   background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));
   border:1px solid rgba(255,255,255,.06);
-  border-radius:16px;padding:22px;box-shadow:var(--shadow);
-  display:grid;gap:16px;grid-template-columns:1.1fr .9fr;
+  border-radius:16px; padding:22px; box-shadow:var(--shadow);
+  display:grid; gap:16px; grid-template-columns:1.1fr .9fr;
 }
-.hero h1{margin:0 0 8px;font-size:24px}
-.hero p{margin:0;color:var(--muted)}
-@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{margin:0 0 8px; font-size:24px}
+.hero p{margin:0; color:var(--muted)}
+@media (max-width:860px){ .hero{grid-template-columns:1fr} }
 
 /* Clock */
-.clock{display:grid;place-items:center;min-height:180px;background:radial-gradient(110% 110% at 50% 0%,#0b223f 0%,#0a1730 60%);border:1px solid rgba(255,255,255,.06);border-radius:16px;}
-.clock time{font-family:ui-monospace,Sono,SFMono-Regular,Menlo,Consolas,monospace;font-size:56px;letter-spacing:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;color:transparent;text-shadow:0 0 22px rgba(24,196,184,.25);}
-.clock small{color:var(--muted);margin-top:6px}
+.clock{
+  display:grid; place-items:center; min-height:160px;
+  background:radial-gradient(110% 110% at 50% 0%, #0b223f 0%, #0a1730 60%);
+  border:1px solid rgba(255,255,255,.06); border-radius:16px;
+}
+.clock time{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:52px; letter-spacing:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  text-shadow:0 0 22px rgba(24,196,184,.25);
+}
+.clock small{display:block;color:var(--muted);margin-top:6px}
 
 /* Footer */
-footer{max-width:1100px;margin:16px auto 24px;padding:12px 18px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;}
+footer{
+  max-width:1100px;margin:16px auto 24px; padding:12px 18px;
+  display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
+  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:14px;
+}
 .counter{display:flex;align-items:center;gap:8px}
 .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
 .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);color:var(--muted)}
-.btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
-.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042422;border:none}
 .muted{color:var(--muted)}
+.btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#042422; border:none}
 
 /* Modals */
-.modal-backdrop{position:fixed;inset:0;background:rgba(5,10,20,.65);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px;overflow:auto;}
-.modal{background:linear-gradient(180deg,#0e1b35,#0b162c);color:var(--text);border:1px solid rgba(255,255,255,.08);border-radius:16px;max-width:860px;width:100%;box-shadow:var(--shadow);padding:18px;max-height:min(90vh,820px);overflow:auto;}
-.modal h2{margin:0 0 8px;font-size:20px}
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(5,10,20,.65);
+  display:none; align-items:center; justify-content:center; z-index:2000; padding:16px;
+  overflow:auto;
+}
 .modal-backdrop.show{display:flex}
+.modal{
+  background:linear-gradient(180deg,#0e1b35,#0b162c); color:var(--text);
+  border:1px solid rgba(255,255,255,.08); border-radius:16px; max-width:720px; width:100%;
+  box-shadow:var(--shadow); padding:18px; max-height:min(90vh,820px); overflow:auto;
+}
+.modal h2{margin:0 0 8px; font-size:20px}
+.modal p{margin:8px 0 0}
 .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(14,27,53,0),rgba(14,27,53,.9));padding-top:10px}
-
-/* Report section */
-#report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;}
-#report h2{text-align:center;margin-bottom:10px}
-.report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
-canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radius:12px;padding:10px}
-.stats{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);color:#dfeafb;margin-right:8px}
+.badge.warn{border-color:rgba(245,158,11,.4); color:#ffd58a}
+.badge.danger{border-color:rgba(239,68,68,.4); color:#ffaaaa}
 </style>
 </head>
 <body>
-<div class="sim-banner"><span class="sim-badge">🧠 <b>Symulacja szkoleniowa</b></span><span>To bezpieczny test świadomości — <b>nic złego się nie dzieje</b>.</span></div>
+<!-- Banner -->
+<div class="sim-banner" id="simBanner">
+  <span class="sim-badge">🧠 <b>Symulacja szkoleniowa</b></span>
+  <span>To bezpieczna strona edukacyjna — <b>nic złego się nie dzieje</b>. Dane zostają lokalnie.</span>
+</div>
 
-<header class="site-header">
+<!-- Header -->
+<header class="site-header" role="banner">
   <div class="wrap">
-    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg></div><b>SecCoach</b><span class="muted">• Edukacja</span></div>
-    <nav id="mainnav">
-      <a href="#" class="sim-link" data-sim="1">O nas</a>
-      <a href="#" class="sim-link" data-sim="1">Usługi</a>
-      <a href="#" class="sim-link" data-sim="1">Kontakt</a>
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg>
+      </div>
+      <b>SecCoach</b><span class="muted">• Edukacja</span>
+    </div>
+    <nav id="mainnav" aria-label="Główne menu">
+      <a href="#" id="navEasy">O nas</a>
+      <a href="#" id="navMedium">Usługi</a>
+      <a href="#" id="navHard">Kontakt</a>
     </nav>
   </div>
 </header>
 
+<!-- Main -->
 <main>
-  <section class="hero">
+  <section class="hero" aria-labelledby="t1">
     <div>
-      <h1>To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
+      <h1 id="t1">To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
       <p>Jeśli wiadomość budzi wątpliwości: <b>nie klikaj</b> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT.</p>
     </div>
-    <div class="clock"><time id="clock">--:--:--</time><small id="clockDate"></small></div>
+    <div class="clock" aria-live="polite">
+      <time id="clock">--:--:--</time>
+      <small id="clockDate" class="muted"></small>
+    </div>
   </section>
 </main>
 
-<footer>
-  <div class="counter"><span class="dot"></span><span>Odwiedziny: <b id="visits">0</b></span><span class="pill">Symulacja</span></div>
-  <button class="btn primary" id="reportBtn">Raport (symulacja)</button>
-  <div class="muted"><span class="pill">Autorzy</span> Król Damian (54103) • Angelika Adamczewska (55914) • Projekt inżynierski WSB Merito Bydgoszcz © 2025</div>
+<!-- Footer -->
+<footer role="contentinfo">
+  <div class="counter" aria-live="polite">
+    <span class="dot" aria-hidden="true"></span>
+    <span>Odwiedziny (lokalnie): <b id="visits">0</b></span>
+    <span class="pill">Symulacja</span>
+  </div>
+  <div class="muted" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <span class="pill">Autorzy</span>
+    <span>Król Damian (54103)</span><span>•</span><span>Angelika Adamczewska (55914)</span>
+    <span>•</span><b>Projekt inżynierski</b> Uniwersytetu WSB Merito w Bydgoszczy © 2025
+  </div>
 </footer>
 
-<section id="report" style="display:none">
-  <h2>📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
-  <div class="report-grid">
-    <canvas id="barChart"></canvas>
-    <canvas id="lineChart"></canvas>
-    <canvas id="pieChart"></canvas>
-  </div>
-  <div class="stats">
-    <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
-    <p>🔹 Liczba zdarzeń: <b id="statEvents">0</b></p>
-    <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
-    <button class="btn" id="exportCsv">Eksport CSV</button>
-    <button class="btn" id="resetBtn">Reset symulacji</button>
-  </div>
-</section>
-
-<!-- Intro modal -->
-<div class="modal-backdrop" id="introModal">
-  <div class="modal">
-    <h2>Uwaga: nie klikaj w podejrzane linki</h2>
-    <p class="muted">To jest <b>symulacja szkoleniowa</b>. Celem jest nauka bez ryzyka. Nic złego się nie dzieje.</p>
-    <ul><li>Sprawdź nadawcę i domenę.</li><li>Uważaj na presję czasu.</li><li>Nie instaluj niczego z maila.</li></ul>
-    <div class="actions"><button class="btn primary" id="introOk">Rozumiem</button></div>
-  </div>
-</div>
+<!-- Reusable modal container -->
+<div class="modal-backdrop" id="modalRoot" aria-modal="true" role="dialog" aria-live="polite"></div>
 
 <script>
-/* Banner offset */
-(function(){const b=document.querySelector('.sim-banner');document.documentElement.style.setProperty('--banner-h',(b?b.offsetHeight:0)+'px');})();
+/* --- Banner offset var --- */
+(function(){
+  const b=document.getElementById('simBanner');
+  function setH(){document.documentElement.style.setProperty('--banner-h',(b?b.offsetHeight:0)+'px');}
+  setH(); addEventListener('resize',setH);
+})();
 
-/* Clock */
-function updateClock(){const n=new Date();const p=n=>String(n).padStart(2,'0');document.getElementById('clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;document.getElementById('clockDate').textContent=n.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}updateClock();setInterval(updateClock,1000);
+/* --- Clock --- */
+function updateClock(){
+  const now=new Date(); const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  document.getElementById('clockDate').textContent = now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+}
+updateClock(); setInterval(updateClock,1000);
 
-/* Visits counter */
-let v=parseInt(localStorage.getItem('vis')||'0',10)||0;v++;localStorage.setItem('vis',v);document.getElementById('visits').textContent=v;
+/* --- Visits counter (local) --- */
+(function(){
+  const KEY='seccoach_visits';
+  let n=parseInt(localStorage.getItem(KEY)||'0',10); if(isNaN(n)) n=0; n+=1;
+  localStorage.setItem(KEY,String(n));
+  document.getElementById('visits').textContent = n;
+})();
 
-/* Intro modal */
-const intro=document.getElementById('introModal'),ok=document.getElementById('introOk');if(!sessionStorage.getItem('introSeen')){intro.classList.add('show');sessionStorage.setItem('introSeen','1');}ok.onclick=()=>intro.classList.remove('show');
-
-/* Simulation sequence */
-function log(type){const data=JSON.parse(localStorage.getItem('log')||'[]');data.push({type,when:new Date().toISOString()});localStorage.setItem('log',JSON.stringify(data));}
-function modal(txt){const m=document.createElement('div');m.className='modal-backdrop show';m.innerHTML=`<div class="modal"><h2>${txt.title}</h2><p class="muted">${txt.body}</p><div class="actions"><button class="btn primary">OK</button></div></div>`;document.body.appendChild(m);m.querySelector('button').onclick=()=>m.remove();}
-function runSeq(){const arr=[{t:'warn',title:'Uwaga: możliwy phishing',body:'Symulacja – nie klikaj w podejrzane linki.'},{t:'update',title:'Aktualizacja systemu — wymagane działanie',body:'Symulacja – nie instaluj nic z maila.'},{t:'encrypt',title:'System: wykryto szyfrowanie plików',body:'Symulacja – to ćwiczenie edukacyjne.'}];arr.forEach((x,i)=>setTimeout(()=>{modal(x);log(x.t);},i*8000));}
-document.querySelectorAll('.sim-link').forEach(a=>a.onclick=e=>{e.preventDefault();runSeq();});
-
-/* Report */
-const rep=document.getElementById('report'),btn=document.getElementById('reportBtn');
-btn.onclick=()=>{rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});drawCharts();};
-function drawCharts(){
- const data=JSON.parse(localStorage.getItem('log')||'[]');
- const counts={warn:0,update:0,encrypt:0};
- data.forEach(x=>counts[x.type]=(counts[x.type]||0)+1);
- const ctx1=document.getElementById('barChart'),ctx2=document.getElementById('lineChart'),ctx3=document.getElementById('pieChart');
- new Chart(ctx1,{type:'bar',data:{labels:['Phishing','Aktualizacja','Szyfrowanie'],datasets:[{label:'Liczba kliknięć',data:[counts.warn,counts.update,counts.encrypt],backgroundColor:['#18c4b8','#3ee6b9','#0fa']} ]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}});
- const timeData={};data.forEach(x=>{const d=new Date(x.when);const k=d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');timeData[k]=(timeData[k]||0)+1;});
- new Chart(ctx2,{type:'line',data:{labels:Object.keys(timeData),datasets:[{label:'Aktywność w czasie',data:Object.values(timeData),borderColor:'#18c4b8',tension:.3}]},options:{plugins:{legend:{labels:{color:'#a9b8c9'}}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}});
- new Chart(ctx3,{type:'pie',data:{labels:['Phishing','Aktualizacja','Szyfrowanie'],datasets:[{data:[counts.warn,counts.update,counts.encrypt],backgroundColor:['#18c4b8','#3ee6b9','#0fa']}]},options:{plugins:{legend:{labels:{color:'#a9b8c9'}}}}});
- document.getElementById('statVisits').textContent=localStorage.getItem('vis')||'0';
- document.getElementById('statEvents').textContent=data.length;
- document.getElementById('statLast').textContent=data.length?new Date(data[data.length-1].when).toLocaleString('pl-PL'):'—';
+/* --- Modal utilities --- */
+const modalRoot=document.getElementById('modalRoot');
+let modalOpen=false;
+function openModal(html, onOpen){
+  modalRoot.innerHTML = `<div class="modal">${html}</div>`;
+  modalRoot.classList.add('show');
+  modalOpen=true;
+  if(typeof onOpen==='function') onOpen(modalRoot.querySelector('.modal'));
+  modalRoot.onclick=(e)=>{ if(e.target===modalRoot) closeModal(); };
+}
+function closeModal(){
+  modalRoot.classList.remove('show');
+  modalRoot.innerHTML='';
+  modalOpen=false;
 }
 
-/* Export CSV + Reset */
-document.getElementById('exportCsv').onclick=()=>{const arr=JSON.parse(localStorage.getItem('log')||'[]');if(!arr.length)return alert('Brak danych.');const csv='typ,data\n'+arr.map(r=>`${r.type},${r.when}`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='seccoach-symulacja.csv';a.click();};
-document.getElementById('resetBtn').onclick=()=>{if(confirm('Wyczyścić lokalne dane?')){localStorage.clear();sessionStorage.clear();location.reload();}};
+/* --- Intro calming modal (shows immediately) --- */
+function showIntro(){
+  openModal(`
+    <h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2>
+    <p class="muted">
+      Ta witryna służy nauce bezpiecznych zachowań. <br>
+      W prawdziwym życiu: sprawdzaj nadawcę, nie instaluj plików z maila, zgłaszaj podejrzane sytuacje do IT.
+    </p>
+    <div class="actions">
+      <button class="btn primary" id="introOk">Rozumiem</button>
+    </div>
+  `, (modal)=>{
+    modal.querySelector('#introOk').addEventListener('click', closeModal);
+  });
+}
+
+/* --- Installer simulation modal (with two buttons) --- */
+function showInstaller(){
+  const html=`
+    <span class="badge warn">Symulacja</span>
+    <h2>Aktualizacja systemu — wymagane działanie</h2>
+    <p class="muted">Komputer wymaga natychmiastowej instalacji pakietu bezpieczeństwa. Czy chcesz kontynuować?</p>
+    <ul class="muted" style="margin-left:18px">
+      <li>Źródło: <b>niezweryfikowane</b> (to tylko test szkoleniowy).</li>
+      <li>Dobra praktyka: instaluj aktualizacje wyłącznie z oficjalnych źródeł.</li>
+    </ul>
+    <div class="actions">
+      <button class="btn" id="reportIt">Zgłoś incydent do IT</button>
+      <button class="btn primary" id="install">Zainstaluj</button>
+    </div>
+  `;
+  openModal(html,(modal)=>{
+    modal.querySelector('#install').addEventListener('click', ()=>{
+      closeModal();
+      openModal(`
+        <span class="badge danger">Błąd</span>
+        <h2>To nie był dobry wybór</h2>
+        <p class="muted">W realnej sytuacji instalowanie oprogramowania z nieznanego źródła to ryzyko. Zawsze weryfikuj nadawcę i zgłaszaj wątpliwości do IT.</p>
+        <div class="actions"><button class="btn primary" id="ack">OK</button></div>
+      `,(m)=>m.querySelector('#ack').addEventListener('click', closeModal));
+    });
+    modal.querySelector('#reportIt').addEventListener('click', ()=>{
+      closeModal();
+      openModal(`
+        <span class="badge">Gratulacje</span>
+        <h2>Świetnie — to właściwa reakcja</h2>
+        <p class="muted">Zgłaszanie podejrzanych komunikatów do IT to najlepsza praktyka. Tak trzymać!</p>
+        <div class="actions"><button class="btn primary" id="ok">OK</button></div>
+      `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+    });
+  });
+}
+
+/* --- Queue second modal 8s after page load, but don't overlap --- */
+let secondModalDue=false;
+setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); }, 8000);
+
+/* --- Show intro immediately; when intro closes and time has passed, show installer --- */
+showIntro();
+const observer=new MutationObserver(()=>{
+  if(!modalOpen && secondModalDue){ showInstaller(); observer.disconnect(); }
+});
+observer.observe(modalRoot,{attributes:true,attributeFilter:['class']});
+
+/* --- Educational modals for nav --- */
+function showEasy(){
+  openModal(`
+    <span class="badge">Poziom: łatwy</span>
+    <h2>Jak rozpoznać podejrzanego maila?</h2>
+    <ul class="muted" style="margin-left:18px">
+      <li>Sprawdź <b>adres nadawcy</b> (literówki, dziwne domeny).</li>
+      <li>Uważaj na <b>presję czasu</b> („pilne”, „natychmiast”).</li>
+      <li>Nie klikaj linków, których się nie spodziewasz.</li>
+    </ul>
+    <div class="actions"><button class="btn primary" id="ok">OK</button></div>
+  `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+}
+function showMedium(){
+  openModal(`
+    <span class="badge">Poziom: średni</span>
+    <h2>Link wygląda poprawnie? Sprawdź, dokąd naprawdę prowadzi</h2>
+    <p class="muted">Najedź na link i <b>odczytaj pełny adres</b>. Zwróć uwagę na:</p>
+    <ul class="muted" style="margin-left:18px">
+      <li>subdomeny udające markę (np. <code>login.bank.example.com</code> vs <code>bank.com</code>),</li>
+      <li>dziwne rozszerzenia plików (<code>.exe</code>, <code>.js</code>, <code>.scr</code>),</li>
+      <li>HTTPS nie gwarantuje wiarygodności nadawcy.</li>
+    </ul>
+    <div class="actions"><button class="btn primary" id="ok">OK</button></div>
+  `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+}
+function showHard(){
+  openModal(`
+    <span class="badge">Poziom: trudny</span>
+    <h2>Co zrobić po kliknięciu w złośliwy link?</h2>
+    <ol class="muted" style="margin-left:18px">
+      <li><b>Odłącz</b> urządzenie od sieci (Wi-Fi/kabel).</li>
+      <li><b>Nie</b> restartuj — zgódź się na analizę IT.</li>
+      <li>Zrób zrzut ekranu, <b>zanotuj godzinę</b>, zachowaj maila jako dowód.</li>
+      <li><b>Natychmiast zgłoś</b> incydent do działu IT / CSIRT.</li>
+    </ol>
+    <div class="actions"><button class="btn primary" id="ok">Zapamiętam</button></div>
+  `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
+}
+
+/* --- Bind nav --- */
+document.getElementById('navEasy').addEventListener('click',(e)=>{e.preventDefault(); showEasy();});
+document.getElementById('navMedium').addEventListener('click',(e)=>{e.preventDefault(); showMedium();});
+document.getElementById('navHard').addEventListener('click',(e)=>{e.preventDefault(); showHard();});
 </script>
 </body>
 </html>
