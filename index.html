@@ -4,210 +4,519 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SecCoach — Symulacja szkoleniowa</title>
-<meta name="description" content="Bezpieczna strona edukacyjna — nic złego się nie dzieje. Dane lokalne.">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="description" content="SecCoach — symulacja szkoleniowa. Dane lokalne.">
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root{
   --bg:#0b1326; --panel:#0f1a34; --card:#0e1630;
   --text:#e7f0fa; --muted:#a9b8c9;
-  --accent:#18c4b8; --accent-2:#3ee6b9; --danger:#ef4444; --warn:#f59e0b;
-  --shadow:0 10px 30px rgba(2,6,23,.45);
-  --banner-h:40px;
+  --accent:#18c4b8; --accent-2:#3ee6b9;
+  --banner-h:48px;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-  background:linear-gradient(180deg,#081326,#0a1530); color:var(--text);
-}
-
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#081326,#0a1530);color:var(--text)}
 /* Banner */
 .sim-banner{
-  position:fixed; top:0; left:0; right:0; z-index:1200;
-  display:flex; align-items:center; justify-content:center; gap:8px;
-  padding:8px 12px;
-  background:linear-gradient(90deg,rgba(24,196,184,.15),rgba(62,230,185,.15));
-  border-bottom:1px solid rgba(255,255,255,.12);
-  font-size:14px; color:#dff6f3;
-  backdrop-filter:saturate(140%) blur(6px);
+  position:fixed;left:0;right:0;top:0;z-index:1400;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:10px 14px;background:linear-gradient(90deg,rgba(24,196,184,.12),rgba(62,230,185,.08));
+  border-bottom:1px solid rgba(255,255,255,.06);font-size:14px;color:#dff6f3;
+  backdrop-filter:saturate(120%) blur(6px);
 }
-.sim-badge{padding:4px 8px;border-radius:999px;border:1px solid rgba(24,196,184,.5);background:rgba(24,196,184,.12);}
-
-/* Header */
-.site-header{
-  position:sticky; top:var(--banner-h); z-index:1000;
-  background:rgba(10,20,40,.85);
-  border-bottom:1px solid rgba(255,255,255,.06);
-  backdrop-filter:saturate(140%) blur(8px);
-}
-.wrap{max-width:1100px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px}
+/* Header (below banner) */
+.site-header{position:sticky;top:var(--banner-h);z-index:1300;background:rgba(8,14,26,.9);border-bottom:1px solid rgba(255,255,255,.04)}
+.wrap{max-width:1100px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:12px}
 .brand{display:flex;align-items:center;gap:10px}
-.logo{width:38px;height:38px;border-radius:9px;background:#0a1a33;display:grid;place-items:center}
-.logo svg{width:22px;height:22px}
-nav{margin-left:auto;display:flex;gap:10px}
-nav a{color:#dfeafb;text-decoration:none;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06)}
-nav a:hover{background:rgba(255,255,255,.05)}
+.logo{width:38px;height:38px;border-radius:8px;background:#081726;display:grid;place-items:center}
+.brand b{font-size:16px}
+nav{margin-left:auto;display:flex;gap:8px}
+nav a{color:#dfeafb;text-decoration:none;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.03)}
+nav a:hover{background:rgba(255,255,255,.03)}
 
-/* Main */
-main{max-width:1100px;margin:0 auto;padding:calc(18px + var(--banner-h)) 18px 18px}
-.hero{display:grid;gap:16px;grid-template-columns:1.1fr .9fr;
-  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
-  border-radius:16px;padding:22px;box-shadow:var(--shadow);}
-.hero h1{margin:0 0 8px;font-size:24px}
-.hero p{margin:0;color:var(--muted)}
+/* Main content - padding-top will be set by JS to banner+header */
+main{max-width:1100px;margin:0 auto;padding:20px 18px 36px}
+
+/* Hero */
+.hero{display:grid;gap:16px;grid-template-columns:1.1fr .9fr;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.04);border-radius:14px;padding:20px;box-shadow:0 8px 28px rgba(2,6,23,.45)}
 @media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{margin:0 0 6px}
+.hero p{margin:0;color:var(--muted)}
 
 /* Clock */
-.clock{display:grid;place-items:center;min-height:160px;background:#0a1c3c;border-radius:16px;border:1px solid rgba(255,255,255,.06);}
-.clock time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:52px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;color:transparent;}
-.clock small{color:var(--muted);margin-top:6px}
+.clock{display:grid;place-items:center;min-height:140px;border-radius:12px;background:linear-gradient(180deg,#081b30,#071427);border:1px solid rgba(255,255,255,.03)}
+.clock time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:48px;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;color:transparent}
+.clock small{display:block;color:var(--muted);margin-top:8px}
 
 /* Footer */
-footer{max-width:1100px;margin:16px auto 24px;padding:12px 18px;
-  display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
-  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;}
+footer{max-width:1100px;margin:20px auto;padding:12px 18px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.03);border-radius:12px}
 .counter{display:flex;align-items:center;gap:8px}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);color:var(--muted)}
-.btn{border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+.pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.05);color:var(--muted)}
+.btn{border:1px solid rgba(255,255,255,.06);background:transparent;color:var(--text);padding:8px 12px;border-radius:10px;cursor:pointer}
 .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042422;border:none}
-.muted{color:var(--muted)}
 
 /* Report */
-#report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);
-  border:1px solid rgba(255,255,255,.06);border-radius:16px;display:none;}
-#report h2{text-align:center;margin-bottom:20px}
-.report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
-.chart-box{background:#0d1c38;border-radius:12px;padding:10px}
-.chart-box canvas{display:block;width:100%!important;height:360px!important}
-@media(max-width:520px){.chart-box canvas{height:300px!important}}
-.stats{text-align:center;margin-top:20px}
-.stats p{margin:4px 0}
+#report{max-width:1100px;margin:28px auto;padding:18px;background:rgba(255,255,255,.01);border:1px solid rgba(255,255,255,.03);border-radius:12px;display:none}
+#report h2{text-align:center;margin-top:0;margin-bottom:12px}
+.report-grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.chart-box{background:#071530;border-radius:10px;padding:10px}
+.chart-box canvas{display:block;width:100% !important;height:320px !important}
+@media (min-width:900px){ .chart-box canvas{height:380px !important} }
 
-/* Modale */
-.modal-backdrop{position:fixed;inset:0;background:rgba(5,10,20,.65);
-  display:none;align-items:center;justify-content:center;z-index:2000;padding:16px;}
+/* Stats area */
+.stats{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:12px;color:var(--muted)}
+.stats .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+
+/* Modal */
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,6,12,.66);display:none;align-items:center;justify-content:center;z-index:1500;padding:16px}
 .modal-backdrop.show{display:flex}
-.modal{background:#0b162c;color:var(--text);border:1px solid rgba(255,255,255,.08);
-  border-radius:16px;max-width:720px;width:100%;padding:18px;box-shadow:var(--shadow);}
+.modal{background:linear-gradient(180deg,#07122a,#061022);color:var(--text);border-radius:12px;padding:16px;max-width:720px;width:100%;box-shadow:0 12px 36px rgba(2,6,23,.6);border:1px solid rgba(255,255,255,.04);max-height:90vh;overflow:auto}
 .modal h2{margin-top:0}
-.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
-.progress{height:12px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0}
-.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s linear}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+.progress{height:12px;border-radius:8px;background:rgba(255,255,255,.04);overflow:hidden;margin:8px 0}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .18s linear}
+
+/* small helpers */
+.muted{color:var(--muted)}
+kbd{background:#071726;border-radius:6px;padding:2px 6px;font-family:ui-monospace;font-size:90%}
 </style>
 </head>
 <body>
-
-<div class="sim-banner"><span class="sim-badge">🧠 Symulacja szkoleniowa</span>
- To bezpieczna strona edukacyjna — <b>nic złego się nie dzieje</b>. Dane zostają lokalnie.
-</div>
-
-<header class="site-header">
-  <div class="wrap">
-    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg></div><b>SecCoach</b></div>
-    <nav>
-      <a href="#" id="navEasy">O nas</a>
-      <a href="#" id="navMedium">Usługi</a>
-      <a href="#" id="navHard">Kontakt</a>
-    </nav>
+  <!-- Banner -->
+  <div class="sim-banner" id="simBanner" role="status" aria-live="polite">
+    <span style="display:inline-flex;align-items:center;gap:8px">
+      <span class="pill" style="border:none;background:rgba(24,196,184,.12);color:#dff6f3">🧠 Symulacja szkoleniowa</span>
+      <span style="margin-left:6px">To bezpieczna strona edukacyjna — <strong>nic złego się nie dzieje</strong>. Dane lokalne.</span>
+    </span>
   </div>
-</header>
 
-<main>
-  <section class="hero">
-    <div>
-      <h1>To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
-      <p>Jeśli wiadomość budzi wątpliwości: <b>nie klikaj</b> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT.</p>
+  <!-- Header -->
+  <header class="site-header" role="banner" aria-label="Główne menu">
+    <div class="wrap">
+      <div class="brand"><div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg></div><b>SecCoach</b></div>
+      <nav aria-label="Nawigacja">
+        <a href="#" id="navEasy">O nas</a>
+        <a href="#" id="navMedium">Usługi</a>
+        <a href="#" id="navHard">Kontakt</a>
+      </nav>
     </div>
-    <div class="clock"><time id="clock">--:--:--</time><small id="clockDate"></small></div>
+  </header>
+
+  <!-- Main -->
+  <main id="mainContent">
+    <section class="hero" aria-labelledby="t1">
+      <div>
+        <h1 id="t1">To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
+        <p>Jeśli wiadomość budzi wątpliwości: <strong>nie klikaj</strong> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT.</p>
+      </div>
+      <div class="clock" aria-live="polite" aria-atomic="true">
+        <time id="clock">--:--:--</time>
+        <small id="clockDate" class="muted"></small>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer role="contentinfo">
+    <div class="counter" aria-live="polite"><span class="dot" aria-hidden="true"></span> Odwiedziny (lokalnie): <b id="visits">0</b> <span class="pill" style="margin-left:8px">Symulacja</span></div>
+
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn primary" id="reportBtn" aria-controls="report">Raport (symulacja)</button>
+      <a class="btn" href="https://kannarro.github.io/Technologie-aplikacji-mobilnych/login.html" target="_blank" rel="noopener">Przejdź do quizu</a>
+    </div>
+
+    <div class="muted" style="text-align:right">
+      <div><strong>Autorzy:</strong> Król Damian (54103) • Angelika Adamczewska (55914)</div>
+      <div>Projekt inżynierski — Uniwersytet WSB Merito w Bydgoszczy © 2025</div>
+    </div>
+  </footer>
+
+  <!-- Report -->
+  <section id="report" aria-labelledby="repTitle">
+    <h2 id="repTitle">📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
+    <div class="report-grid" role="region" aria-label="Wykresy">
+      <div class="chart-box"><canvas id="barChart" aria-label="Wykres słupkowy"></canvas></div>
+      <div class="chart-box"><canvas id="lineChart" aria-label="Wykres liniowy"></canvas></div>
+      <div class="chart-box"><canvas id="pieChart" aria-label="Wykres kołowy"></canvas></div>
+      <div class="chart-box"><canvas id="decisionChart" aria-label="Wykres czasu decyzji"></canvas></div>
+    </div>
+    <div class="stats" aria-live="polite">
+      <div class="row">
+        <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
+        <p>🔹 Zdarzenia: <b id="statEvents">0</b></p>
+        <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <p>⏱ Śr. czas decyzji: <b id="avgDecision">—</b></p>
+        <p>⏱ Mediana: <b id="medDecision">—</b></p>
+        <p>✅ Zgłoszenia: <b id="countReport">0</b></p>
+        <p>⚠️ Instalacje: <b id="countInstall">0</b></p>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" id="exportCsv">Eksport CSV</button>
+        <button class="btn" id="resetBtn">Reset symulacji</button>
+      </div>
+    </div>
   </section>
-</main>
 
-<footer>
-  <div class="counter"><span class="dot"></span> Odwiedziny: <b id="visits">0</b> <span class="pill">Symulacja</span></div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn primary" id="reportBtn">Raport (symulacja)</button>
-    <a class="btn" href="https://kannarro.github.io/Technologie-aplikacji-mobilnych/login.html" target="_blank">Przejdź do quizu</a>
-  </div>
-  <div class="muted">
-    <b>Autorzy:</b> Król Damian (54103) • Angelika Adamczewska (55914) • Projekt inżynierski WSB Merito Bydgoszcz © 2025
-  </div>
-</footer>
-
-<section id="report">
-  <h2>📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
-  <div class="report-grid">
-    <div class="chart-box"><canvas id="barChart"></canvas></div>
-    <div class="chart-box"><canvas id="lineChart"></canvas></div>
-    <div class="chart-box"><canvas id="pieChart"></canvas></div>
-    <div class="chart-box"><canvas id="decisionChart"></canvas></div>
-  </div>
-  <div class="stats">
-    <p>🔹 Odwiedziny: <b id="statVisits">0</b> | Zdarzenia: <b id="statEvents">0</b> | Ostatnia aktywność: <b id="statLast">—</b></p>
-    <p>⏱️ Śr. czas decyzji: <b id="avgDecision">—</b> | Mediana: <b id="medDecision">—</b> | ✅ Zgłoszenia: <b id="countReport">0</b> | ⚠️ Instalacje: <b id="countInstall">0</b></p>
-    <button class="btn" id="exportCsv">Eksport CSV</button>
-    <button class="btn" id="resetBtn">Reset</button>
-  </div>
-</section>
-
-<div class="modal-backdrop" id="modalRoot"></div>
+  <!-- Modal root -->
+  <div class="modal-backdrop" id="modalRoot" aria-hidden="true"></div>
 
 <script>
-const KEY_VIS='seccoach_visits', KEY_LOG='seccoach_log';
-function logEvent(type,note){const arr=JSON.parse(localStorage.getItem(KEY_LOG)||'[]');arr.push({type,when:new Date().toISOString(),...(note?{note}: {})});localStorage.setItem(KEY_LOG,JSON.stringify(arr));}
-function fmtPL(dt){return dt.toLocaleString('pl-PL');}
+/* ---------------- Constants & helpers ---------------- */
+const KEY_VIS = 'seccoach_visits';
+const KEY_LOG = 'seccoach_log';
 
-/* Zegar */
+function logEvent(type, note){
+  try{
+    const arr = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
+    arr.push({ type, when: new Date().toISOString(), ...(note ? { note } : {}) });
+    localStorage.setItem(KEY_LOG, JSON.stringify(arr));
+  }catch(e){ console.error('logEvent error', e); }
+}
+function fmtPL(date){ return date.toLocaleString('pl-PL'); }
+
+/* ---------------- Banner/header offset ---------------- */
+/* compute heights and set padding-top for main to avoid being covered */
+function adjustLayoutPadding(){
+  const banner = document.getElementById('simBanner');
+  const header = document.querySelector('.site-header');
+  const main = document.getElementById('mainContent');
+  const bh = (banner && banner.offsetHeight) ? banner.offsetHeight : 0;
+  const hh = (header && header.offsetHeight) ? header.offsetHeight : 0;
+  // set CSS custom property so header can be sticky under banner
+  document.documentElement.style.setProperty('--banner-h', bh + 'px');
+  // set top padding for main = banner + header + 8px
+  if(main) main.style.paddingTop = (bh + hh + 12) + 'px';
+}
+window.addEventListener('load', adjustLayoutPadding);
+window.addEventListener('resize', adjustLayoutPadding);
+
+/* ---------------- Clock ---------------- */
 function updateClock(){
-  const now=new Date(),pad=n=>String(n).padStart(2,'0');
-  document.getElementById('clock').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
-  document.getElementById('clockDate').textContent=now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const now = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const hh = pad(now.getHours()), mm = pad(now.getMinutes()), ss = pad(now.getSeconds());
+  const timeEl = document.getElementById('clock');
+  const dateEl = document.getElementById('clockDate');
+  if(timeEl) timeEl.textContent = `${hh}:${mm}:${ss}`;
+  if(dateEl) dateEl.textContent = now.toLocaleDateString('pl-PL', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 }
-updateClock();setInterval(updateClock,1000);
+updateClock();
+setInterval(updateClock, 1000);
 
-/* Licznik odwiedzin */
-let v=parseInt(localStorage.getItem(KEY_VIS)||'0',10);if(isNaN(v))v=0;v++;localStorage.setItem(KEY_VIS,String(v));document.getElementById('visits').textContent=v;logEvent('visit');
+/* ---------------- Visits counter ---------------- */
+(function(){
+  try{
+    let v = parseInt(localStorage.getItem(KEY_VIS) || '0', 10);
+    if(isNaN(v)) v = 0;
+    v += 1;
+    localStorage.setItem(KEY_VIS, String(v));
+    const visitsEl = document.getElementById('visits');
+    if(visitsEl) visitsEl.textContent = v;
+    logEvent('visit');
+  }catch(e){ console.error('visits error', e); }
+})();
 
-/* Modal */
-const modalRoot=document.getElementById('modalRoot');
-function openModal(html,cb){modalRoot.innerHTML=`<div class="modal">${html}</div>`;modalRoot.classList.add('show');cb?.(modalRoot.querySelector('.modal'));modalRoot.onclick=e=>{if(e.target===modalRoot)closeModal();};}
-function closeModal(){modalRoot.classList.remove('show');modalRoot.innerHTML='';}
+/* ---------------- Modal utils ---------------- */
+const modalRoot = document.getElementById('modalRoot');
+let modalOpen = false;
+function openModal(html, options = {}){
+  modalRoot.innerHTML = `<div class="modal" role="dialog" aria-modal="true">${html}</div>`;
+  modalRoot.classList.add('show');
+  modalRoot.setAttribute('aria-hidden', 'false');
+  modalOpen = true;
+  // attach close-on-backdrop click
+  modalRoot.onclick = (e) => { if(e.target === modalRoot) closeModal(); };
+  // callback
+  if(typeof options.onOpen === 'function'){
+    try{ options.onOpen(modalRoot.querySelector('.modal')); }catch(e){ console.error(e); }
+  }
+}
+function closeModal(){
+  modalRoot.classList.remove('show');
+  modalRoot.innerHTML = '';
+  modalRoot.setAttribute('aria-hidden', 'true');
+  modalOpen = false;
+}
 
-/* Intro i Instalator */
+/* ---------------- Intro + Installer sequence ---------------- */
+let pageLoadTime = Date.now();
+let introShownAt = null;
+
 function showIntro(){
-  openModal(`<h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2><p class="muted">To ćwiczenie z cyberbezpieczeństwa. Zawsze weryfikuj nadawcę i nie instaluj niczego z nieznanych źródeł.</p><div class="actions"><button class="btn primary" id="ok">Rozumiem</button></div>`,m=>m.querySelector('#ok').onclick=()=>{closeModal();if(Date.now()-introStart>=8000)showInstaller();else setTimeout(showInstaller,8000-(Date.now()-introStart));});logEvent('intro_shown');}
-let introStart=Date.now();
-function showInstaller(){
-  openModal(`<span class="pill">Symulacja</span><h2>Aktualizacja systemu — wymagane działanie</h2><p class="muted">Komputer wymaga natychmiastowej instalacji pakietu bezpieczeństwa. Czy chcesz kontynuować?</p><div class="progress"><div class="bar" id="bar"></div></div><small id="pct">0%</small><div class="actions"><button class="btn" id="report">Zgłoś incydent do IT</button><button class="btn primary" id="install">Zainstaluj</button></div>`,
-  m=>{
-    const bar=m.querySelector('#bar'),pct=m.querySelector('#pct');let p=0,start=performance.now();const t=setInterval(()=>{p+=Math.random()*8+2;if(p>=100){p=100;clearInterval(t);}bar.style.width=p+'%';pct.textContent=p.toFixed(0)+'%';if(p%20<3)logEvent('installer_progress',String(Math.round(p)));},200);
-    function done(type,msg){clearInterval(t);closeModal();logEvent(type,String(Math.round(performance.now()-start)));openModal(msg,m2=>m2.querySelector('button').onclick=closeModal);}
-    m.querySelector('#install').onclick=()=>done('installer_install',`<h2>Błąd</h2><p class="muted">To nie był dobry wybór. Nie instaluj nieznanych plików.</p><div class="actions"><button class="btn primary">OK</button></div>`);
-    m.querySelector('#report').onclick=()=>done('installer_report',`<h2>Świetnie!</h2><p class="muted">Zgłoszenie incydentu do IT to właściwa reakcja.</p><div class="actions"><button class="btn primary">OK</button></div>`);
-  });logEvent('installer_shown');
+  introShownAt = Date.now();
+  openModal(`
+    <h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2>
+    <p class="muted">To ćwiczenie szkoleniowe. Zwracaj uwagę na nadawcę, domenę oraz prośby o hasła czy płatności. Dane są lokalne — nic nie wysyłamy.</p>
+    <div class="actions"><button class="btn primary" id="introOk">Rozumiem</button></div>
+  `, {
+    onOpen: (m) => {
+      const btn = m.querySelector('#introOk');
+      if(btn) btn.addEventListener('click', () => {
+        closeModal();
+        scheduleInstaller();
+      });
+    }
+  });
+  logEvent('intro_shown');
 }
+
+function scheduleInstaller(){
+  // want installer 8000 ms after page load; if already passed, show immediately
+  const elapsed = Date.now() - pageLoadTime;
+  const wait = Math.max(0, 8000 - elapsed);
+  if(wait === 0) {
+    // show immediately
+    showInstaller();
+  } else {
+    setTimeout(()=> {
+      // but only if modal isn't open
+      if(!modalOpen) showInstaller();
+    }, wait);
+  }
+}
+
+function showInstaller(){
+  openModal(`
+    <span class="pill">Symulacja</span>
+    <h2>Aktualizacja systemu — wymagane działanie</h2>
+    <p class="muted">Wykryto aktualizację. Czy chcesz zainstalować aktualizację teraz?</p>
+    <div class="progress" aria-hidden="true"><div class="bar" id="installBar"></div></div>
+    <small class="muted">Postęp: <b id="installPct">0%</b></small>
+    <div class="actions">
+      <button class="btn" id="reportIt">Zgłoś incydent do IT</button>
+      <button class="btn primary" id="installBtn">Zainstaluj</button>
+    </div>
+  `, {
+    onOpen: (m) => {
+      const bar = m.querySelector('#installBar');
+      const pct = m.querySelector('#installPct');
+      const installBtn = m.querySelector('#installBtn');
+      const reportBtn = m.querySelector('#reportIt');
+
+      // installer simulation
+      let progress = 0;
+      let lastBucket = -1;
+      const startTime = performance.now();
+      const timer = setInterval(()=>{
+        const step = Math.floor(Math.random()*7)+3; // 3..9
+        progress = Math.min(100, progress + step);
+        bar.style.width = progress + '%';
+        pct.textContent = progress.toFixed(0) + '%';
+        const bucket = Math.floor(progress / 20);
+        if(bucket > lastBucket){
+          lastBucket = bucket;
+          logEvent('installer_progress', String(bucket * 20));
+        }
+        if(progress >= 100){
+          clearInterval(timer);
+        }
+      }, 200);
+
+      function finalize(type){
+        clearInterval(timer);
+        const ms = Math.round(performance.now() - startTime);
+        logEvent(type, String(ms)); // note = ms
+      }
+
+      installBtn.addEventListener('click', ()=>{
+        finalize('installer_install');
+        closeModal();
+        // feedback modal
+        openModal(`<h2>Błąd</h2><p class="muted">Instalowanie niezweryfikowanego oprogramowania jest niebezpieczne. Zawsze konsultuj z IT.</p><div class="actions"><button class="btn primary" id="ack">OK</button></div>`, {
+          onOpen: (mm) => mm.querySelector('#ack').addEventListener('click', closeModal)
+        });
+      });
+
+      reportBtn.addEventListener('click', ()=>{
+        finalize('installer_report');
+        closeModal();
+        openModal(`<h2>Świetnie — zgłoszono incydent</h2><p class="muted">Zgłoszenie podejrzanego komunikatu do IT to poprawne działanie.</p><div class="actions"><button class="btn primary" id="ok">OK</button></div>`, {
+          onOpen: (mm) => mm.querySelector('#ok').addEventListener('click', closeModal)
+        });
+      });
+    }
+  });
+  logEvent('installer_shown');
+}
+
+/* show intro immediately on load */
 showIntro();
 
-/* Edukacyjne sekcje */
-const tips={
-  easy:`<h2>Jak rozpoznać podejrzany mail?</h2><ul class="muted"><li>Sprawdź adres nadawcy</li><li>Uważaj na presję czasu</li><li>Nie klikaj niespodziewanych linków</li></ul>`,
-  med:`<h2>Weryfikuj linki</h2><p class="muted">Najedź na link i sprawdź pełny adres (https, subdomeny, literówki).</p>`,
-  hard:`<h2>Co zrobić po kliknięciu w złośliwy link?</h2><ol class="muted"><li>Odłącz sieć</li><li>Nie restartuj</li><li>Zgłoś incydent do IT</li></ol>`
-};
-document.getElementById('navEasy').onclick=e=>{e.preventDefault();openModal(tips.easy+`<div class="actions"><button class="btn primary">OK</button></div>`,m=>m.querySelector('button').onclick=closeModal);logEvent('nav_easy');};
-document.getElementById('navMedium').onclick=e=>{e.preventDefault();openModal(tips.med+`<div class="actions"><button class="btn primary">OK</button></div>`,m=>m.querySelector('button').onclick=closeModal);logEvent('nav_medium');};
-document.getElementById('navHard').onclick=e=>{e.preventDefault();openModal(tips.hard+`<div class="actions"><button class="btn primary">OK</button></div>`,m=>m.querySelector('button').onclick=closeModal);logEvent('nav_hard');};
-
-/* Raport i wykresy */
-let charts=[];
-function compute(){
-  const logs=JSON.parse(localStorage.getItem(KEY_LOG)||'[]'),counts={report:0,install:0,easy:0,medium:0,hard:0},dec=[];
-  logs.forEach(r=>{
-    if(r.type==='installer_report'){counts.report++;if(r.note)dec.push(+r.note);}
-    if(r.type==='installer_install'){counts.install++;if(r.note)dec.push(+r.note);}
-    if(r.type==='nav_easy')counts.easy++;
-    if(r.type==='nav_medium')counts.medium++;
-    if(r.type==='nav_hard')counts.hard++;
+/* ---------------- Navigation educational modals ---------------- */
+document.getElementById('navEasy').addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal(`<h2>Poziom: łatwy</h2><ul class="muted"><li>Sprawdź adres nadawcy</li><li>Uważaj na presję czasu</li><li>Nie otwieraj niespodziewanych załączników</li></ul><div class="actions"><button class="btn primary" id="ok1">OK</button></div>`, {
+    onOpen: (m) => m.querySelector('#ok1').addEventListener('click', () => { closeModal(); })
   });
-  const avg=dec.length?dec.reduce((a,b)=>a+b,0)/dec.length:0,med=dec.length?dec.sort((a,b)=>a-b)[Math.floor(dec.length/2)]:0;
-  return{counts,avg,med,last:logs.length?fmtPL(new Date(logs.at(-
+  logEvent('nav_easy');
+});
+document.getElementById('navMedium').addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal(`<h2>Poziom: średni</h2><p class="muted">Najedź na link i sprawdź pełny adres; zwróć uwagę na subdomeny i literówki.</p><div class="actions"><button class="btn primary" id="ok2">OK</button></div>`, {
+    onOpen: (m) => m.querySelector('#ok2').addEventListener('click', () => { closeModal(); })
+  });
+  logEvent('nav_medium');
+});
+document.getElementById('navHard').addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal(`<h2>Poziom: trudny</h2><ol class="muted"><li>Odłącz urządzenie od sieci</li><li>Nie restartuj - zgłoś do IT</li><li>Zrób zrzut ekranu i zanotuj czas</li></ol><div class="actions"><button class="btn primary" id="ok3">OK</button></div>`, {
+    onOpen: (m) => m.querySelector('#ok3').addEventListener('click', () => { closeModal(); })
+  });
+  logEvent('nav_hard');
+});
+
+/* ---------------- Report & Charts ---------------- */
+let charts = { bar: null, line: null, pie: null, decision: null };
+
+function computeStats(){
+  const logs = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
+  const counts = { report:0, install:0, easy:0, medium:0, hard:0 };
+  const decisionsMs = [];
+  const byMinute = new Map();
+
+  logs.forEach(r => {
+    if(r.type === 'installer_report') counts.report++;
+    if(r.type === 'installer_install') counts.install++;
+    if(r.type === 'nav_easy') counts.easy++;
+    if(r.type === 'nav_medium') counts.medium++;
+    if(r.type === 'nav_hard') counts.hard++;
+    if(r.note) decisionsMs.push(Number(r.note));
+    // activity per minute
+    const t = new Date(r.when);
+    const key = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+    byMinute.set(key, (byMinute.get(key) || 0) + 1);
+  });
+
+  const series = Array.from(byMinute.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
+  decisionsMs.sort((a,b)=>a-b);
+  const avg = decisionsMs.length ? decisionsMs.reduce((a,b)=>a+b,0)/decisionsMs.length : null;
+  const med = decisionsMs.length ? (decisionsMs.length % 2 ? decisionsMs[(decisionsMs.length-1)/2] : (decisionsMs[decisionsMs.length/2-1] + decisionsMs[decisionsMs.length/2]) /2 ) : null;
+
+  const buckets = { '0–2s':0, '2–5s':0, '5–10s':0, '10–20s':0, '20s+':0 };
+  decisionsMs.forEach(ms => {
+    const s = ms/1000;
+    if(s <= 2) buckets['0–2s']++;
+    else if(s <=5) buckets['2–5s']++;
+    else if(s <=10) buckets['5–10s']++;
+    else if(s <=20) buckets['10–20s']++;
+    else buckets['20s+']++;
+  });
+
+  return {
+    counts, series, total: logs.length, last: logs.length ? new Date(logs[logs.length-1].when) : null,
+    avgSec: avg !== null ? (Math.round(avg/100)/10) : null,
+    medSec: med !== null ? (Math.round(med/100)/10) : null,
+    bucketLabels: Object.keys(buckets),
+    bucketValues: Object.values(buckets)
+  };
+}
+
+function destroyCharts(){
+  Object.keys(charts).forEach(k => {
+    if(charts[k]) { try{ charts[k].destroy(); }catch(e){} charts[k] = null; }
+  });
+}
+
+function drawCharts(){
+  try{
+    const s = computeStats();
+
+    // bar chart (actions)
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    if(charts.bar) charts.bar.destroy();
+    charts.bar = new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
+        datasets: [{ data: [s.counts.report, s.counts.install, s.counts.easy, s.counts.medium, s.counts.hard], backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#a9b8c9'}}, y:{beginAtZero:true, ticks:{color:'#a9b8c9'}} } }
+    });
+
+    // line chart (activity over time)
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    if(charts.line) charts.line.destroy();
+    charts.line = new Chart(lineCtx, {
+      type: 'line',
+      data: { labels: s.series.map(x=>x[0]), datasets:[{ label:'Aktywność', data: s.series.map(x=>x[1]), borderColor:'#18c4b8', tension:0.3, fill:false }]},
+      options: { responsive:true, maintainAspectRatio:false, scales:{x:{ticks:{color:'#a9b8c9'}}, y:{ticks:{color:'#a9b8c9'}, beginAtZero:true}} }
+    });
+
+    // pie (share)
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    if(charts.pie) charts.pie.destroy();
+    charts.pie = new Chart(pieCtx, {
+      type: 'pie',
+      data: { labels: ['Zgłoś','Zainstaluj','Łatwy','Średni','Trudny'], datasets:[{ data: [s.counts.report, s.counts.install, s.counts.easy, s.counts.medium, s.counts.hard], backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]},
+      options: { responsive:true, maintainAspectRatio:false }
+    });
+
+    // decision distribution
+    const decCtx = document.getElementById('decisionChart').getContext('2d');
+    if(charts.decision) charts.decision.destroy();
+    charts.decision = new Chart(decCtx, {
+      type: 'bar',
+      data: { labels: s.bucketLabels, datasets: [{ data: s.bucketValues, backgroundColor:'#3ee6b9' }]},
+      options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#a9b8c9'}}, y:{ticks:{color:'#a9b8c9'},beginAtZero:true}} }
+    });
+
+    // fill stats
+    document.getElementById('statVisits').textContent = localStorage.getItem(KEY_VIS) || '0';
+    document.getElementById('statEvents').textContent = s.total;
+    document.getElementById('statLast').textContent = s.last ? fmtPL(s.last) : '—';
+    document.getElementById('avgDecision').textContent = s.avgSec !== null ? (s.avgSec + ' s') : '—';
+    document.getElementById('medDecision').textContent = s.medSec !== null ? (s.medSec + ' s') : '—';
+    document.getElementById('countReport').textContent = s.counts.report;
+    document.getElementById('countInstall').textContent = s.counts.install;
+
+  }catch(err){ console.error('drawCharts error', err); }
+}
+
+/* Show report on button click */
+document.getElementById('reportBtn').addEventListener('click', ()=>{
+  const rep = document.getElementById('report');
+  rep.style.display = 'block';
+  rep.scrollIntoView({behavior:'smooth'});
+  // draw after the container is visible and browser had a frame to compute sizes
+  requestAnimationFrame(drawCharts);
+});
+
+/* resize handling: resize charts when window changes */
+window.addEventListener('resize', ()=> {
+  // Chart.js handles resizing, but we trigger redraw to be safe
+  try{
+    if(document.getElementById('report').style.display === 'block'){
+      requestAnimationFrame(drawCharts);
+    }
+  }catch(e){ console.warn(e); }
+});
+
+/* ---------------- CSV export & reset ---------------- */
+document.getElementById('exportCsv').addEventListener('click', ()=>{
+  const arr = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
+  if(!arr.length){ alert('Brak danych do eksportu.'); return; }
+  const headers = ['type','when','note'];
+  const rows = arr.map(r => headers.map(h => `"${String(r[h] || '').replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'seccoach_raport.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  if(confirm('Wyczyścić lokalne dane (licznik i logi)?')){ localStorage.removeItem(KEY_LOG); localStorage.removeItem(KEY_VIS); destroyCharts(); location.reload(); }
+});
+
+/* ---------------- small safety: catch uncaught errors ---------------- */
+window.addEventListener('error', (ev) => {
+  console.error('Window error:', ev.error || ev.message);
+});
+
+/* End of script */
+</script>
+</body>
+</html>
