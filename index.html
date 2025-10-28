@@ -118,14 +118,22 @@ footer{
 #report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;display:none}
 #report h2{text-align:center;margin:0 0 10px}
 .report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
-/* gwarantowana, responsywna wysokość wykresów */
-canvas{
-  width:100%!important;
-  height:clamp(260px, 45vw, 420px) !important;
+
+/* KLUCZ: pudełko z wymuszoną wysokością, canvas wypełnia 100% */
+.chart-box{
+  width:100%;
+  height:clamp(260px, 45vw, 420px);
   background:#0d1c38;
   border-radius:12px;
-  padding:10px
+  padding:10px;
+  display:block;
 }
+.chart-box > canvas{
+  width:100% !important;
+  height:100% !important;
+  display:block;
+}
+
 .stats{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
 .stats .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 </style>
@@ -185,10 +193,10 @@ canvas{
 <section id="report" aria-labelledby="repTitle">
   <h2 id="repTitle">📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
   <div class="report-grid">
-    <canvas id="barChart" aria-label="Kliknięcia wg kategorii" role="img"></canvas>
-    <canvas id="lineChart" aria-label="Aktywność w czasie" role="img"></canvas>
-    <canvas id="pieChart" aria-label="Udział procentowy akcji" role="img"></canvas>
-    <canvas id="decisionChart" aria-label="Rozkład czasu decyzji" role="img"></canvas>
+    <div class="chart-box"><canvas id="barChart" aria-label="Kliknięcia wg kategorii" role="img"></canvas></div>
+    <div class="chart-box"><canvas id="lineChart" aria-label="Aktywność w czasie" role="img"></canvas></div>
+    <div class="chart-box"><canvas id="pieChart" aria-label="Udział procentowy akcji" role="img"></canvas></div>
+    <div class="chart-box"><canvas id="decisionChart" aria-label="Rozkład czasu decyzji" role="img"></canvas></div>
   </div>
   <div class="stats">
     <div class="row">
@@ -221,7 +229,6 @@ function logEvent(type, note){
   localStorage.setItem(KEY_LOG, JSON.stringify(arr));
 }
 function fmtPL(dt){ return dt.toLocaleString('pl-PL'); }
-const msToSec = ms => Math.round(ms/100)/10; // 1 miejsce po przecinku
 
 /* ---------- Banner offset ---------- */
 (function(){
@@ -270,9 +277,7 @@ function showIntro(){
     <div class="actions">
       <button class="btn primary" id="introOk">Rozumiem</button>
     </div>
-  `, (modal)=>{
-    modal.querySelector('#introOk').addEventListener('click', ()=>{ closeModal(); });
-  });
+  `, (modal)=> modal.querySelector('#introOk').addEventListener('click', closeModal));
   logEvent('intro_shown');
 }
 
@@ -299,7 +304,7 @@ function showInstaller(){
     const bar = modal.querySelector('#installBar');
     const pct = modal.querySelector('#installPct');
     installerProgress = 0; lastLoggedBucket = -1;
-    installerStart = performance.now(); // start pomiaru czasu decyzji
+    installerStart = performance.now();
 
     installerTimer = setInterval(()=>{
       installerProgress += Math.floor(Math.random()*7)+3; // 3–9% co 200ms
@@ -307,17 +312,14 @@ function showInstaller(){
       bar.style.width = installerProgress+'%';
       pct.textContent = installerProgress+'%';
       const bucket = Math.floor(installerProgress/20);
-      if(bucket>lastLoggedBucket){
-        logEvent('installer_progress', String(bucket*20));
-        lastLoggedBucket = bucket;
-      }
+      if(bucket>lastLoggedBucket){ logEvent('installer_progress', String(bucket*20)); lastLoggedBucket = bucket; }
       if(installerProgress===100){ clearInterval(installerTimer); installerTimer=null; }
     }, 200);
 
     function finalizeDecision(type){
       if(installerTimer){ clearInterval(installerTimer); installerTimer=null; }
       const ms = performance.now() - installerStart;
-      logEvent(type, String(Math.round(ms)));   // zapis ms jako tekst
+      logEvent(type, String(Math.round(ms)));
       closeModal();
     }
 
@@ -395,7 +397,7 @@ function computeStats(){
   const logs = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
 
   const counts = { report:0, install:0, easy:0, medium:0, hard:0 };
-  const decisions = []; // w ms (string w logu)
+  const decisions = []; // ms
 
   logs.forEach(r=>{
     if(r.type==='installer_report'){ counts.report++; if(r.note) decisions.push(Number(r.note)); }
@@ -405,7 +407,6 @@ function computeStats(){
     else if(r.type==='nav_hard') counts.hard++;
   });
 
-  // linia (aktywność / min)
   const byMinute = new Map();
   logs.forEach(r=>{
     const t = new Date(r.when);
@@ -416,12 +417,10 @@ function computeStats(){
   const series = Array.from(byMinute.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
   const last = logs.length ? fmtPL(new Date(logs[logs.length-1].when)) : '—';
 
-  // statystyki decyzji
   decisions.sort((a,b)=>a-b);
-  const avgMs = decisions.length ? decisions.reduce((a,b)=>a+b,0)/decisions.length : NaN;
-  const medMs = decisions.length ? (decisions.length%2 ? decisions[(decisions.length-1)/2] : (decisions[decisions.length/2-1]+decisions[decisions.length/2])/2) : NaN;
+  const avg = decisions.length ? decisions.reduce((a,b)=>a+b,0)/decisions.length : NaN;
+  const med = decisions.length ? (decisions.length%2 ? decisions[(decisions.length-1)/2] : (decisions[decisions.length/2-1]+decisions[decisions.length/2])/2) : NaN;
 
-  // rozkład (sekundy)
   const buckets = { '0–2s':0, '2–5s':0, '5–10s':0, '10–20s':0, '20s+':0 };
   decisions.forEach(ms=>{
     const s = ms/1000;
@@ -435,8 +434,8 @@ function computeStats(){
   return {
     counts, series,
     total: logs.length, last,
-    avgSec: isNaN(avgMs)? null : msToSec(avgMs*10), // msToSec już zaokrągla
-    medSec: isNaN(medMs)? null : msToSec(medMs*10),
+    avgSec: isNaN(avg)? null : Math.round(avg/100)/10,
+    medSec: isNaN(med)? null : Math.round(med/100)/10,
     bucketLabels: Object.keys(buckets),
     bucketValues: Object.values(buckets)
   };
@@ -444,6 +443,10 @@ function computeStats(){
 
 function drawCharts(){
   const s = computeStats();
+
+  const commonOpts = {responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#a9b8c9'}}},
+    scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}};
 
   // bar
   const barCtx = document.getElementById('barChart').getContext('2d');
@@ -453,7 +456,7 @@ function drawCharts(){
     data:{ labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
            datasets:[{ label:'Liczba zdarzeń', data:[s.counts.report,s.counts.install,s.counts.easy,s.counts.medium,s.counts.hard],
                        backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
+    options:{...commonOpts, plugins:{legend:{display:false}}}
   });
 
   // line
@@ -462,7 +465,7 @@ function drawCharts(){
   lineChart = new Chart(lineCtx,{
     type:'line',
     data:{ labels:s.series.map(x=>x[0]), datasets:[{ label:'Aktywność w czasie', data:s.series.map(x=>x[1]), borderColor:'#18c4b8', tension:.3 }]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a9b8c9'}}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
+    options:commonOpts
   });
 
   // pie
@@ -482,7 +485,7 @@ function drawCharts(){
   decisionChart = new Chart(decCtx,{
     type:'bar',
     data:{ labels:s.bucketLabels, datasets:[{ label:'Czas decyzji (liczba osób)', data:s.bucketValues, backgroundColor:'#3ee6b9' }] },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
+    options:{...commonOpts, plugins:{legend:{display:false}}}
   });
 
   // stats
@@ -495,13 +498,21 @@ function drawCharts(){
   document.getElementById('countInstall').textContent = s.counts.install;
 }
 
-/* raport + rysowanie */
+/* pokaż raport i RYSUJ po tym, jak element już ma rozmiar */
 document.getElementById('reportBtn').addEventListener('click', ()=>{
   const sec = document.getElementById('report');
   sec.style.display='block';
   sec.scrollIntoView({behavior:'smooth'});
-  drawCharts();
+  requestAnimationFrame(drawCharts);
 });
+
+/* re-render przy zmianie rozmiaru (np. rotacja telefonu) */
+const ro = new ResizeObserver(()=>{
+  if(document.getElementById('report').style.display==='block'){
+    requestAnimationFrame(drawCharts);
+  }
+});
+ro.observe(document.body);
 
 /* Export CSV + Reset */
 document.getElementById('exportCsv').addEventListener('click', ()=>{
@@ -520,11 +531,11 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
 });
 
 /* Kickoff */
-let secondModalReady=false;
+let secondModalDue=false;
 showIntro();
-setTimeout(()=>{ secondModalReady=true; if(!modalOpen) showInstaller(); }, 8000);
-const obs=new MutationObserver(()=>{ if(!modalOpen && secondModalReady){ showInstaller(); obs.disconnect(); }});
-obs.observe(modalRoot,{attributes:true,attributeFilter:['class']});
+setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); }, 8000);
+const modalObserver=new MutationObserver(()=>{ if(!modalOpen && secondModalDue){ showInstaller(); modalObserver.disconnect(); }});
+modalObserver.observe(modalRoot,{attributes:true,attributeFilter:['class']});
 </script>
 </body>
 </html>
