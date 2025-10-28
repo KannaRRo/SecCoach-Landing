@@ -5,48 +5,39 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SecCoach — Strona edukacyjna (symulacja)</title>
 <meta name="description" content="Symulacja szkoleniowa: bezpieczny test świadomości. Nic złego się nie dzieje.">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
-  --bg:#0b1326; --panel:#0f1a34; --card:#0e1630;
-  --text:#e7f0fa; --muted:#a9b8c9;
-  --accent:#18c4b8; --accent-2:#3ee6b9;
-  --warn:#f59e0b; --danger:#ef4444;
+  --bg:#0b1326;--panel:#0f1a34;--card:#0e1630;
+  --text:#e7f0fa;--muted:#a9b8c9;
+  --accent:#18c4b8;--accent-2:#3ee6b9;
+  --warn:#f59e0b;--danger:#ef4444;
   --shadow:0 10px 30px rgba(2,6,23,.45);
   --banner-h:40px;
 }
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
-  background:linear-gradient(180deg,#081326,#0a1530);color:var(--text);
-  padding-bottom:env(safe-area-inset-bottom);
-}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#081326,#0a1530);color:var(--text);}
+body{padding-bottom:env(safe-area-inset-bottom)}
+h2,h3{color:var(--text)}
+a{color:var(--accent)}
 
-/* Sticky SIMULATION banner */
+/* Banner */
 .sim-banner{
   position:fixed;left:0;right:0;top:0;z-index:1200;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:8px 12px;
-  background:linear-gradient(90deg, rgba(24,196,184,.15), rgba(62,230,185,.15));
+  padding:8px 12px;background:linear-gradient(90deg,rgba(24,196,184,.15),rgba(62,230,185,.15));
+  border-bottom:1px solid rgba(255,255,255,.12);color:#dff6f3;font-size:14px;line-height:1.3;
   backdrop-filter:saturate(140%) blur(6px);
-  border-bottom:1px solid rgba(255,255,255,.12);
-  color:#dff6f3;font-size:14px;line-height:1.3;
 }
 .sim-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(24,196,184,.5);background:rgba(24,196,184,.12);font-size:12px}
-.sim-banner b{color:#c7fff6}
 
 /* Header */
-.site-header{
-  position:sticky; top:var(--banner-h); z-index:1000;
-  background:rgba(10,20,40,.85);
-  backdrop-filter:saturate(140%) blur(8px);
-  border-bottom:1px solid rgba(255,255,255,.06);
-}
+.site-header{position:sticky;top:var(--banner-h);z-index:1000;background:rgba(10,20,40,.85);border-bottom:1px solid rgba(255,255,255,.06);backdrop-filter:saturate(140%) blur(8px);}
 .wrap{max-width:1100px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px}
 .brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
 .logo{width:38px;height:38px;border-radius:9px;background:#0a1a33;display:grid;place-items:center}
 .logo svg{width:22px;height:22px}
-.brand b{font-size:16px;letter-spacing:.2px}
+.brand b{font-size:16px}
 nav{margin-left:auto;display:flex;gap:10px;align-items:center}
 nav a{color:#dfeafb;text-decoration:none;font-size:14px;opacity:.9;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06)}
 nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
@@ -62,83 +53,49 @@ main{max-width:1100px;margin:0 auto;padding:calc(18px + var(--banner-h)) 18px 18
 .hero{
   background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));
   border:1px solid rgba(255,255,255,.06);
-  border-radius:16px; padding:22px; box-shadow:var(--shadow);
-  display:grid; gap:16px;
-  grid-template-columns:1.1fr .9fr;
+  border-radius:16px;padding:22px;box-shadow:var(--shadow);
+  display:grid;gap:16px;grid-template-columns:1.1fr .9fr;
 }
 .hero h1{margin:0 0 8px;font-size:24px}
 .hero p{margin:0;color:var(--muted)}
-@media (max-width:860px){ .hero{grid-template-columns:1fr} }
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
 
 /* Clock */
-.clock{
-  display:grid; place-items:center; min-height:180px;
-  background:radial-gradient(110% 110% at 50% 0%, #0b223f 0%, #0a1730 60%);
-  border:1px solid rgba(255,255,255,.06); border-radius:16px;
-}
-.clock time{
-  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:56px; letter-spacing:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  text-shadow:0 0 22px rgba(24,196,184,.25);
-}
-.clock small{display:block;color:var(--muted);margin-top:6px}
-
-/* Info cards */
-.learn{margin-top:16px;display:grid;gap:14px;grid-template-columns:1fr 1fr}
-.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:14px}
-.card h3{margin:0 0 8px;font-size:18px}
-@media (max-width:860px){ .learn{grid-template-columns:1fr} }
+.clock{display:grid;place-items:center;min-height:180px;background:radial-gradient(110% 110% at 50% 0%,#0b223f 0%,#0a1730 60%);border:1px solid rgba(255,255,255,.06);border-radius:16px;}
+.clock time{font-family:ui-monospace,Sono,SFMono-Regular,Menlo,Consolas,monospace;font-size:56px;letter-spacing:2px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;color:transparent;text-shadow:0 0 22px rgba(24,196,184,.25);}
+.clock small{color:var(--muted);margin-top:6px}
 
 /* Footer */
-footer{
-  max-width:1100px;margin:16px auto 24px; padding:12px 18px;
-  display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
-  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:14px;
-}
+footer{max-width:1100px;margin:16px auto 24px;padding:12px 18px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;}
 .counter{display:flex;align-items:center;gap:8px}
 .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
 .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);color:var(--muted)}
-.muted{color:var(--muted)}
 .btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
-.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#042422; border:none}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042422;border:none}
+.muted{color:var(--muted)}
 
-/* Modals: full-height safe */
-.modal-backdrop{
-  position:fixed; inset:0; background:rgba(5,10,20,.65);
-  display:none; align-items:center; justify-content:center; z-index:2000; padding:16px;
-  overflow:auto;
-}
-.modal{
-  background:linear-gradient(180deg,#0e1b35,#0b162c); color:var(--text);
-  border:1px solid rgba(255,255,255,.08); border-radius:16px; max-width:860px; width:100%;
-  box-shadow:var(--shadow); padding:18px;
-  max-height:min(90vh,820px); overflow:auto;
-}
+/* Modals */
+.modal-backdrop{position:fixed;inset:0;background:rgba(5,10,20,.65);display:none;align-items:center;justify-content:center;z-index:2000;padding:16px;overflow:auto;}
+.modal{background:linear-gradient(180deg,#0e1b35,#0b162c);color:var(--text);border:1px solid rgba(255,255,255,.08);border-radius:16px;max-width:860px;width:100%;box-shadow:var(--shadow);padding:18px;max-height:min(90vh,820px);overflow:auto;}
 .modal h2{margin:0 0 8px;font-size:20px}
-.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(14,27,53,0),rgba(14,27,53,.9));padding-top:10px}
 .modal-backdrop.show{display:flex}
-#reportBackdrop canvas{height:auto;max-height:32vh}
-.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;position:sticky;bottom:0;background:linear-gradient(180deg,rgba(14,27,53,0),rgba(14,27,53,.9));padding-top:10px}
+
+/* Report section */
+#report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;}
+#report h2{text-align:center;margin-bottom:10px}
+.report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));}
+canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radius:12px;padding:10px}
+.stats{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
 </style>
 </head>
 <body>
-<!-- Banner -->
-<div class="sim-banner" id="simBanner">
-  <span class="sim-badge">🧠 <b>Symulacja szkoleniowa</b></span>
-  <span>To bezpieczny test świadomości — <b>nic złego się nie dzieje</b>. Dane zostają lokalnie.</span>
-</div>
+<div class="sim-banner"><span class="sim-badge">🧠 <b>Symulacja szkoleniowa</b></span><span>To bezpieczny test świadomości — <b>nic złego się nie dzieje</b>.</span></div>
 
-<!-- Header -->
-<header class="site-header" role="banner">
+<header class="site-header">
   <div class="wrap">
-    <div class="brand" id="brand">
-      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg></div>
-      <b>SecCoach</b><span class="muted">• Edukacja</span>
-    </div>
-    <button class="burger" id="burger" aria-expanded="false" aria-controls="mainnav">Menu</button>
-    <nav id="mainnav" aria-label="Główne menu">
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg></div><b>SecCoach</b><span class="muted">• Edukacja</span></div>
+    <nav id="mainnav">
       <a href="#" class="sim-link" data-sim="1">O nas</a>
       <a href="#" class="sim-link" data-sim="1">Usługi</a>
       <a href="#" class="sim-link" data-sim="1">Kontakt</a>
@@ -147,263 +104,86 @@ footer{
 </header>
 
 <main>
-  <section class="hero" aria-labelledby="t1">
+  <section class="hero">
     <div>
-      <h1 id="t1">To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
-      <p>Jeśli wiadomość budzi wątpliwości: <b>nie klikaj</b> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT. Ten test jest <b>bezpieczny</b> i służy nauce.</p>
+      <h1>To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
+      <p>Jeśli wiadomość budzi wątpliwości: <b>nie klikaj</b> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT.</p>
     </div>
-    <div class="clock" aria-live="polite">
-      <time id="clock">--:--:--</time>
-      <small id="clockDate" class="muted"></small>
-    </div>
-  </section>
-
-  <section class="learn" aria-labelledby="edu">
-    <h2 id="edu" class="sr-only">Wskazówki bezpieczeństwa</h2>
-    <div class="card">
-      <h3>Jak rozpoznać phishing?</h3>
-      <ul class="muted">
-        <li>Nietypowa domena, literówki w adresie nadawcy.</li>
-        <li>Presja czasu („pilne”, „natychmiast”).</li>
-        <li>Prośby o dane logowania, przelew, instalację pliku.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Co zrobić po kliknięciu?</h3>
-      <ul class="muted">
-        <li>Odłącz się od sieci (w prawdziwej sytuacji).</li>
-        <li>Zrób zrzut ekranu i <b>zgłoś do IT</b>.</li>
-        <li>Nie instaluj oprogramowania z linków w mailu.</li>
-      </ul>
-    </div>
+    <div class="clock"><time id="clock">--:--:--</time><small id="clockDate"></small></div>
   </section>
 </main>
 
-<footer role="contentinfo">
-  <div class="counter" aria-live="polite">
-    <span class="dot" aria-hidden="true"></span>
-    <span>Odwiedziny: <b id="visits">0</b></span>
-    <span class="pill">Symulacja</span>
-  </div>
-  <div style="display:flex;gap:8px;flex-wrap:wrap">
-    <button class="btn" id="reportBtn">Raport (symulacja)</button>
-    <button class="btn" id="exportCsvQuick">Eksport CSV</button>
-  </div>
-  <div class="muted" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-    <span class="pill">Autorzy</span>
-    <span>Król Damian (54103)</span><span>•</span><span>Angelika Adamczewska (55914)</span>
-    <span>•</span><b>Projekt inżynierski</b> Uniwersytetu WSB Merito w Bydgoszczy © 2025
-  </div>
+<footer>
+  <div class="counter"><span class="dot"></span><span>Odwiedziny: <b id="visits">0</b></span><span class="pill">Symulacja</span></div>
+  <button class="btn primary" id="reportBtn">Raport (symulacja)</button>
+  <div class="muted"><span class="pill">Autorzy</span> Król Damian (54103) • Angelika Adamczewska (55914) • Projekt inżynierski WSB Merito Bydgoszcz © 2025</div>
 </footer>
 
+<section id="report" style="display:none">
+  <h2>📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
+  <div class="report-grid">
+    <canvas id="barChart"></canvas>
+    <canvas id="lineChart"></canvas>
+    <canvas id="pieChart"></canvas>
+  </div>
+  <div class="stats">
+    <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
+    <p>🔹 Liczba zdarzeń: <b id="statEvents">0</b></p>
+    <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
+    <button class="btn" id="exportCsv">Eksport CSV</button>
+    <button class="btn" id="resetBtn">Reset symulacji</button>
+  </div>
+</section>
+
 <!-- Intro modal -->
-<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+<div class="modal-backdrop" id="introModal">
   <div class="modal">
     <h2>Uwaga: nie klikaj w podejrzane linki</h2>
     <p class="muted">To jest <b>symulacja szkoleniowa</b>. Celem jest nauka bez ryzyka. Nic złego się nie dzieje.</p>
-    <ul>
-      <li>Sprawdź nadawcę i domenę.</li>
-      <li>Uważaj na presję czasu.</li>
-      <li>Nie instaluj niczego z maila.</li>
-    </ul>
-    <div class="actions"><button class="btn primary" id="okBtn">Rozumiem</button></div>
-  </div>
-</div>
-
-<!-- Report modal -->
-<div class="modal-backdrop" id="reportBackdrop" role="dialog" aria-modal="true" style="display:none">
-  <div class="modal">
-    <h2>Raport końcowy — <span class="pill">symulacja/test</span></h2>
-    <p class="muted">Dane są wyłącznie lokalne (ta przeglądarka), nic nie jest wysyłane.</p>
-    <div style="display:grid;gap:12px;grid-template-columns:1fr 1fr">
-      <div class="card">
-        <b>Podsumowanie</b>
-        <ul class="muted" style="margin:8px 0 0 18px">
-          <li>ⓘ <b>Symulacja</b> — nic złego się nie dzieje.</li>
-          <li>Odwiedziny: <b id="rVisits">0</b></li>
-          <li>Sesje (przybliżenie): <b id="rSessions">0</b></li>
-          <li>Interakcje: <b id="rEvents">0</b></li>
-        </ul>
-        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" id="exportCsvBtn">Eksport CSV</button>
-          <button class="btn" id="clearLogsBtn">Wyczyść logi</button>
-          <button class="btn" id="resetBtn">Reset symulacji (lokalnie)</button>
-        </div>
-      </div>
-      <div class="card">
-        <b>Kliknięcia wg wariantu</b>
-        <canvas id="chartBar" width="360" height="220" role="img" aria-label="Wykres słupkowy"></canvas>
-      </div>
-      <div class="card" style="grid-column:1 / -1">
-        <b>Aktywność w czasie</b>
-        <canvas id="chartLine" width="760" height="220" role="img" aria-label="Wykres liniowy"></canvas>
-      </div>
-    </div>
-    <div class="actions"><button class="btn primary" id="reportCloseBtn">Zamknij</button></div>
+    <ul><li>Sprawdź nadawcę i domenę.</li><li>Uważaj na presję czasu.</li><li>Nie instaluj niczego z maila.</li></ul>
+    <div class="actions"><button class="btn primary" id="introOk">Rozumiem</button></div>
   </div>
 </div>
 
 <script>
 /* Banner offset */
-(function(){const b=document.getElementById('simBanner');function setH(){document.documentElement.style.setProperty('--banner-h', (b?b.offsetHeight:0)+'px');}setH();addEventListener('resize',setH);}());
-
-/* Burger */
-const burger=document.getElementById('burger'), nav=document.getElementById('mainnav');
-if(burger){burger.addEventListener('click',()=>{const open=nav.classList.toggle('open');burger.setAttribute('aria-expanded',open?'true':'false');});}
+(function(){const b=document.querySelector('.sim-banner');document.documentElement.style.setProperty('--banner-h',(b?b.offsetHeight:0)+'px');})();
 
 /* Clock */
-function updateClock(){const now=new Date(),pad=n=>String(n).padStart(2,'0');document.getElementById('clock').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;document.getElementById('clockDate').textContent=now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}updateClock();setInterval(updateClock,1000);
+function updateClock(){const n=new Date();const p=n=>String(n).padStart(2,'0');document.getElementById('clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;document.getElementById('clockDate').textContent=n.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}updateClock();setInterval(updateClock,1000);
 
-/* Visits */
-const KEY_VISITS='seccoach_visits';let v=parseInt(localStorage.getItem(KEY_VISITS)||'0',10);v=isNaN(v)?0:v;v++;localStorage.setItem(KEY_VISITS',v); // fix below
-</script>
-<script>
-/* fix small typo from previous script block */
-localStorage.setItem('seccoach_visits', (parseInt(localStorage.getItem('seccoach_visits')||'1',10)||1));
-document.getElementById('visits').textContent = localStorage.getItem('seccoach_visits');
+/* Visits counter */
+let v=parseInt(localStorage.getItem('vis')||'0',10)||0;v++;localStorage.setItem('vis',v);document.getElementById('visits').textContent=v;
 
-/* Intro modal once per session */
-const intro=document.getElementById('modalBackdrop');const ok=document.getElementById('okBtn');
-if(!sessionStorage.getItem('seccoach_seen')){intro.classList.add('show');sessionStorage.setItem('seccoach_seen','1');}
-ok.addEventListener('click',()=>intro.classList.remove('show'));
-
-/* Logging + helpers */
-const KEY_LOG='seccoach_click_log', KEY_DEV='seccoach_modal_device_count', KEY_SES='seccoach_modal_session_count';
-function logPush(rec){try{const arr=JSON.parse(localStorage.getItem(KEY_LOG)||'[]');arr.push(rec);localStorage.setItem(KEY_LOG,JSON.stringify(arr));}catch{}}
-function getInt(k,store){const s=store||localStorage;const n=parseInt(s.getItem(k)||'0',10);return isNaN(n)?0:n;}
-function setInt(k,val,store){(store||localStorage).setItem(k,String(val));}
+/* Intro modal */
+const intro=document.getElementById('introModal'),ok=document.getElementById('introOk');if(!sessionStorage.getItem('introSeen')){intro.classList.add('show');sessionStorage.setItem('introSeen','1');}ok.onclick=()=>intro.classList.remove('show');
 
 /* Simulation sequence */
-const MAX_SHOWS_DEVICE=99, MAX_SHOWS_SESSION=3, INTERVALS=[0,8000,16000];
-function createSimModal(variant){
-  const wrap=document.createElement('div');wrap.className='modal-backdrop show';wrap.innerHTML=`
-  <div class="modal" role="dialog" aria-modal="true">
-    <h2>${variant==='warn'?'Uwaga: możliwy phishing — nie klikaj':variant==='update'?'Aktualizacja systemu — wymagane działanie':'System: wykryto szyfrowanie plików'}</h2>
-    <p class="muted">${
-      variant==='warn'?'To jest symulacja szkoleniowa — bezpieczny test świadomości. Zwróć uwagę na nietypową domenę, presję czasu, prośby o dane.':
-      variant==='update'?'Symulacja: fałszywa aktualizacja. Nie instaluj oprogramowania z linków mailowych. Nic złego się nie dzieje.':
-      'Symulacja: komunikat o „szyfrowaniu” plików. To tylko ćwiczenie edukacyjne — nic złego się nie dzieje.'
-    }</p>
-    ${variant==='encrypt'?`
-      <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:8px;margin-top:10px">
-        <div style="height:10px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden">
-          <div id="fakeProgress" style="width:0%;height:10px;border-radius:8px;background:linear-gradient(90deg,var(--danger),#f87171)"></div>
-        </div>
-        <small class="muted">Postęp (symulacja): <span id="fakeProgressText">0%</span></small>
-      </div>`:''}
-    <div class="actions">
-      <button class="btn sim-close">Zamknij</button>
-      <button class="btn primary sim-action">${variant==='warn'?'Rozumiem':variant==='update'?'Zainstaluj (symulacja)':'Co robić?'}</button>
-    </div>
-    <small class="muted">To jest <b>test/symulacja</b>. Dane pozostają lokalnie w Twojej przeglądarce.</small>
-  </div>`;
-  wrap.addEventListener('click',e=>{if(e.target===wrap) closeSim(wrap,variant);});
-  wrap.querySelector('.sim-close').addEventListener('click',()=>closeSim(wrap,variant));
-  wrap.querySelector('.sim-action').addEventListener('click',()=>{logPush({when:new Date().toISOString(),variant,note:'sim-action',ua:navigator.userAgent});closeSim(wrap,variant);});
-  if(variant==='encrypt'){
-    const bar=()=>{const b=wrap.querySelector('#fakeProgress'),t=wrap.querySelector('#fakeProgressText');let p=0;const id=setInterval(()=>{p+=Math.floor(Math.random()*7)+3;if(p>100)p=100;b.style.width=p+'%';t.textContent=p+'%';if(p>=100)clearInterval(id);},400);};setTimeout(bar,250);
-  }
-  return wrap;
-}
-function debrief(variant){
-  const txt=variant==='warn'?'Dobra praktyka: sprawdzaj nadawcę i domenę, nie podawaj haseł z linków w mailu, zgłoś do IT.'
-    :variant==='update'?'Fałszywe aktualizacje to częsta metoda ataku. Instaluj tylko z zaufanych źródeł. Zgłoś do IT.'
-    :'W prawdziwym incydencie: odłącz sieć, nie restartuj komputera, natychmiast zgłoś do IT.';
-  alert('Symulacja — krótkie wskazówki:\n\n'+txt+'\n\nNic złego się nie dzieje.');
-}
-function closeSim(node,variant){node.remove();setTimeout(()=>debrief(variant),150);}
-function openVariant(variant){
-  const s=getInt(KEY_SES,sessionStorage), d=getInt(KEY_DEV,localStorage);
-  if(s>=MAX_SHOWS_SESSION||d>=MAX_SHOWS_DEVICE) return;
-  setInt(KEY_SES,s+1,sessionStorage); setInt(KEY_DEV,d+1,localStorage);
-  document.body.appendChild(createSimModal(variant));
-}
-/* Start sequence ALWAYS */
-['warn','update','encrypt'].forEach((v,i)=>setTimeout(()=>openVariant(v),INTERVALS[i]));
-
-/* Intercept simulated links */
-document.addEventListener('click',e=>{
-  const a=e.target.closest?.('a'); if(!a) return;
-  if(a.dataset.sim==='1'||a.classList.contains('sim-link')){
-    logPush({when:new Date().toISOString(),href:a.href,note:'link-click'});
-    e.preventDefault(); openVariant('warn');
-  }
-});
+function log(type){const data=JSON.parse(localStorage.getItem('log')||'[]');data.push({type,when:new Date().toISOString()});localStorage.setItem('log',JSON.stringify(data));}
+function modal(txt){const m=document.createElement('div');m.className='modal-backdrop show';m.innerHTML=`<div class="modal"><h2>${txt.title}</h2><p class="muted">${txt.body}</p><div class="actions"><button class="btn primary">OK</button></div></div>`;document.body.appendChild(m);m.querySelector('button').onclick=()=>m.remove();}
+function runSeq(){const arr=[{t:'warn',title:'Uwaga: możliwy phishing',body:'Symulacja – nie klikaj w podejrzane linki.'},{t:'update',title:'Aktualizacja systemu — wymagane działanie',body:'Symulacja – nie instaluj nic z maila.'},{t:'encrypt',title:'System: wykryto szyfrowanie plików',body:'Symulacja – to ćwiczenie edukacyjne.'}];arr.forEach((x,i)=>setTimeout(()=>{modal(x);log(x.t);},i*8000));}
+document.querySelectorAll('.sim-link').forEach(a=>a.onclick=e=>{e.preventDefault();runSeq();});
 
 /* Report */
-(function(){
-  const KEY_C='seccoach_click_log', KEY_S='seccoach_modal_session_count', KEY_D='seccoach_modal_device_count';
-  const btnRep=document.getElementById('reportBtn'), btnEq=document.getElementById('exportCsvQuick');
-  const bd=document.getElementById('reportBackdrop'), close=document.getElementById('reportCloseBtn');
-  const bExp=document.getElementById('exportCsvBtn'), bClr=document.getElementById('clearLogsBtn'), bReset=document.getElementById('resetBtn');
-  const elV=document.getElementById('rVisits'), elS=document.getElementById('rSessions'), elE=document.getElementById('rEvents');
-  const cBar=document.getElementById('chartBar').getContext('2d');
-  const cLine=document.getElementById('chartLine').getContext('2d');
+const rep=document.getElementById('report'),btn=document.getElementById('reportBtn');
+btn.onclick=()=>{rep.style.display='block';rep.scrollIntoView({behavior:'smooth'});drawCharts();};
+function drawCharts(){
+ const data=JSON.parse(localStorage.getItem('log')||'[]');
+ const counts={warn:0,update:0,encrypt:0};
+ data.forEach(x=>counts[x.type]=(counts[x.type]||0)+1);
+ const ctx1=document.getElementById('barChart'),ctx2=document.getElementById('lineChart'),ctx3=document.getElementById('pieChart');
+ new Chart(ctx1,{type:'bar',data:{labels:['Phishing','Aktualizacja','Szyfrowanie'],datasets:[{label:'Liczba kliknięć',data:[counts.warn,counts.update,counts.encrypt],backgroundColor:['#18c4b8','#3ee6b9','#0fa']} ]},options:{plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}});
+ const timeData={};data.forEach(x=>{const d=new Date(x.when);const k=d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');timeData[k]=(timeData[k]||0)+1;});
+ new Chart(ctx2,{type:'line',data:{labels:Object.keys(timeData),datasets:[{label:'Aktywność w czasie',data:Object.values(timeData),borderColor:'#18c4b8',tension:.3}]},options:{plugins:{legend:{labels:{color:'#a9b8c9'}}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}});
+ new Chart(ctx3,{type:'pie',data:{labels:['Phishing','Aktualizacja','Szyfrowanie'],datasets:[{data:[counts.warn,counts.update,counts.encrypt],backgroundColor:['#18c4b8','#3ee6b9','#0fa']}]},options:{plugins:{legend:{labels:{color:'#a9b8c9'}}}}});
+ document.getElementById('statVisits').textContent=localStorage.getItem('vis')||'0';
+ document.getElementById('statEvents').textContent=data.length;
+ document.getElementById('statLast').textContent=data.length?new Date(data[data.length-1].when).toLocaleString('pl-PL'):'—';
+}
 
-  function logs(){try{return JSON.parse(localStorage.getItem(KEY_C)||'[]');}catch{return [];}}
-  function visits(){const n=parseInt(localStorage.getItem('seccoach_visits')||'0',10);return isNaN(n)?0:n;}
-  function sessionsApprox(){const s=parseInt(sessionStorage.getItem(KEY_S)||'0',10)||0;const d=parseInt(localStorage.getItem(KEY_D)||'0',10)||0;return Math.max(s,d);}
-  function exportCSV(){
-    const arr=logs(); if(!arr.length){alert('Brak danych (symulacja).');return;}
-    const heads=Array.from(arr.reduce((s,o)=>{Object.keys(o).forEach(k=>s.add(k));return s;},new Set()));
-    const rows=arr.map(r=>heads.map(h=>`"${String(r[h]??'').replace(/"/g,'""')}"`).join(','));
-    const csv=[heads.join(','),...rows].join('\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}), url=URL.createObjectURL(blob);
-    const a=Object.assign(document.createElement('a'),{href:url,download:'seccoach-logs-symulacja.csv'});document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
-  }
-  function clearLogs(){localStorage.removeItem(KEY_C); draw();}
-  function resetAll(){
-    if(!confirm('Zresetować lokalne liczniki i logi?')) return;
-    localStorage.removeItem(KEY_C);
-    localStorage.removeItem(KEY_D);
-    sessionStorage.removeItem(KEY_S);
-    draw();
-  }
-
-  function bar(ctx,labels,values){
-    const W=ctx.canvas.width,H=ctx.canvas.height,p={l:40,r:10,t:10,b:28},gh=H-p.t-p.b,cw=(W-p.l-p.r)/labels.length,max=Math.max(1,...values);
-    ctx.clearRect(0,0,W,H); ctx.font='12px Inter, system-ui, sans-serif'; ctx.fillStyle='#a9b8c9';
-    ctx.strokeStyle='rgba(255,255,255,.2)'; ctx.beginPath(); ctx.moveTo(p.l,p.t); ctx.lineTo(p.l,H-p.b); ctx.lineTo(W-p.r,H-p.b); ctx.stroke();
-    labels.forEach((lab,i)=>{const v=values[i],h=Math.round((v/max)*gh),x=p.l+i*cw+cw*0.15,y=H-p.b-h,bw=cw*0.7;
-      const g=ctx.createLinearGradient(0,y,0,y+h); g.addColorStop(0,'#18c4b8'); g.addColorStop(1,'#3ee6b9');
-      ctx.fillStyle=g; ctx.fillRect(x,y,bw,h);
-      ctx.fillStyle='#e7f0fa'; const tx=String(v); ctx.fillText(tx,x+bw/2-ctx.measureText(tx).width/2,y-6);
-      ctx.fillStyle='#a9b8c9'; const tw=ctx.measureText(lab).width; ctx.fillText(lab,x+bw/2-tw/2,H-p.b+16);
-    });
-  }
-  function line(ctx,pts){
-    const W=ctx.canvas.width,H=ctx.canvas.height,p={l:50,r:10,t:10,b:28};
-    ctx.clearRect(0,0,W,H); ctx.font='12px Inter, system-ui, sans-serif';
-    if(!pts.length){ctx.fillStyle='#a9b8c9';ctx.fillText('Brak danych (symulacja).',12,20);return;}
-    pts.sort((a,b)=>a.x-b.x);
-    const tMin=pts[0].x.getTime(), tMax=pts[pts.length-1].x.getTime(), yMax=Math.max(1,...pts.map(p=>p.y));
-    const x=t=>p.l+(W-p.l-p.r)*((t-tMin)/(tMax-tMin||1)), y=v=>(H-p.b)-(H-p.t-p.b)*((v)/(yMax||1));
-    ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.beginPath(); for(let i=0;i<=4;i++){const yy=p.t+(H-p.t-p.b)*(i/4);ctx.moveTo(p.l,yy);ctx.lineTo(W-p.r,yy);} ctx.stroke();
-    const grad=ctx.createLinearGradient(0,p.t,0,H-p.b); grad.addColorStop(0,'#3ee6b9'); grad.addColorStop(1,'#18c4b8');
-    ctx.strokeStyle=grad; ctx.lineWidth=2; ctx.beginPath(); pts.forEach((pt,i)=>{const X=x(pt.x.getTime()),Y=y(pt.y); if(i===0)ctx.moveTo(X,Y);else ctx.lineTo(X,Y);}); ctx.stroke();
-  }
-  function draw(){
-    const arr=logs(), sum={vis:visits(), ev:arr.length, sess:sessionsApprox()};
-    document.getElementById('rVisits').textContent=sum.vis;
-    document.getElementById('rEvents').textContent=sum.ev;
-    document.getElementById('rSessions').textContent=sum.sess;
-    const by={warn:0,update:0,encrypt:0,other:0}; arr.forEach(r=>{const v=(r.variant||'').toLowerCase(); if(v in by) by[v]++; else by.other++;});
-    bar(cBar,['warn','update','encrypt','inne'],[by.warn,by.update,by.encrypt,by.other]);
-    const bucket=new Map(); arr.forEach(r=>{const t=new Date(r.when||Date.now()); const k=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,'0')+"-"+String(t.getDate()).padStart(2,'0')+"T"+String(t.getHours()).padStart(2,'0')+":"+String(t.getMinutes()).padStart(2,'0'); bucket.set(k,(bucket.get(k)||0)+1);});
-    const series=Array.from(bucket.entries()).sort((a,b)=>a[0].localeCompare(b[0])).map(([k,v])=>({x:new Date(k+':00'),y:v}));
-    line(cLine,series);
-  }
-  function open(){bd.style.display='flex';bd.classList.add('show');bd.scrollTop=0;draw();}
-  function close(){bd.classList.remove('show');bd.style.display='none';}
-
-  btnRep.addEventListener('click',open); close.addEventListener('click',close);
-  bd.addEventListener('click',e=>{if(e.target===bd) close();});
-  bExp.addEventListener('click',exportCSV); btnEq.addEventListener('click',exportCSV);
-  bClr.addEventListener('click',clearLogs); bReset.addEventListener('click',resetAll);
-})();
-
-/* Easter-egg admin: click logo 5x */
-(()=>{const brand=document.getElementById('brand');let taps=0,tRef=null;if(!brand)return;brand.addEventListener('click',()=>{taps++;clearTimeout(tRef);tRef=setTimeout(()=>taps=0,1000);if(taps>=5){taps=0;document.getElementById('reportBtn').click();}});})();
+/* Export CSV + Reset */
+document.getElementById('exportCsv').onclick=()=>{const arr=JSON.parse(localStorage.getItem('log')||'[]');if(!arr.length)return alert('Brak danych.');const csv='typ,data\n'+arr.map(r=>`${r.type},${r.when}`).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='seccoach-symulacja.csv';a.click();};
+document.getElementById('resetBtn').onclick=()=>{if(confirm('Wyczyścić lokalne dane?')){localStorage.clear();sessionStorage.clear();location.reload();}};
 </script>
 </body>
 </html>
