@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SecCoach — Symulacja szkoleniowa</title>
-<meta name="description" content="Bezpieczna strona edukacyjna — nic złego się nie dzieje.">
+<meta name="description" content="Bezpieczna strona edukacyjna — nic złego się nie dzieje. Dane lokalne.">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
@@ -12,28 +12,26 @@
   --text:#e7f0fa; --muted:#a9b8c9;
   --accent:#18c4b8; --accent-2:#3ee6b9; --danger:#ef4444; --warn:#f59e0b;
   --shadow:0 10px 30px rgba(2,6,23,.45);
-  --banner-h: 40px;
+  --banner-h:40px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Arial;
   background:linear-gradient(180deg,#081326,#0a1530); color:var(--text);
-  padding-bottom: env(safe-area-inset-bottom);
 }
-h1,h2,h3{color:var(--text)}
 
-/* Sticky banner */
+/* Banner */
 .sim-banner{
-  position:fixed; left:0; right:0; top:0; z-index:1200;
+  position:fixed; top:0; left:0; right:0; z-index:1200;
   display:flex; align-items:center; justify-content:center; gap:8px;
   padding:8px 12px;
-  background:linear-gradient(90deg, rgba(24,196,184,.15), rgba(62,230,185,.15));
+  background:linear-gradient(90deg,rgba(24,196,184,.15),rgba(62,230,185,.15));
   border-bottom:1px solid rgba(255,255,255,.12);
-  color:#dff6f3; font-size:14px; line-height:1.3;
+  font-size:14px; color:#dff6f3;
   backdrop-filter:saturate(140%) blur(6px);
 }
-.sim-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(24,196,184,.5);background:rgba(24,196,184,.12);font-size:12px}
+.sim-badge{padding:4px 8px;border-radius:999px;border:1px solid rgba(24,196,184,.5);background:rgba(24,196,184,.12);}
 
 /* Header */
 .site-header{
@@ -43,88 +41,71 @@ h1,h2,h3{color:var(--text)}
   backdrop-filter:saturate(140%) blur(8px);
 }
 .wrap{max-width:1100px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;gap:14px}
-.brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand{display:flex;align-items:center;gap:10px}
 .logo{width:38px;height:38px;border-radius:9px;background:#0a1a33;display:grid;place-items:center}
 .logo svg{width:22px;height:22px}
-.brand b{font-size:16px}
-nav{margin-left:auto;display:flex;gap:10px;align-items:center}
-nav a{color:#dfeafb;text-decoration:none;font-size:14px;opacity:.9;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06)}
-nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
+nav{margin-left:auto;display:flex;gap:10px}
+nav a{color:#dfeafb;text-decoration:none;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06)}
+nav a:hover{background:rgba(255,255,255,.05)}
 
 /* Main */
 main{max-width:1100px;margin:0 auto;padding:calc(18px + var(--banner-h)) 18px 18px}
-.hero{
-  background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));
-  border:1px solid rgba(255,255,255,.06);
-  border-radius:16px; padding:22px; box-shadow:var(--shadow);
-  display:grid; gap:16px; grid-template-columns:1.1fr .9fr;
-}
-.hero h1{margin:0 0 8px; font-size:24px}
-.hero p{margin:0; color:var(--muted)}
-@media (max-width:860px){ .hero{grid-template-columns:1fr} }
+.hero{display:grid;gap:16px;grid-template-columns:1.1fr .9fr;
+  background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);
+  border-radius:16px;padding:22px;box-shadow:var(--shadow);}
+.hero h1{margin:0 0 8px;font-size:24px}
+.hero p{margin:0;color:var(--muted)}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
 
 /* Clock */
-.clock{
-  display:grid; place-items:center; min-height:160px;
-  background:radial-gradient(110% 110% at 50% 0%, #0b223f 0%, #0a1730 60%);
-  border:1px solid rgba(255,255,255,.06); border-radius:16px;
-}
-.clock time{
-  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:52px; letter-spacing:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent-2));
-  -webkit-background-clip:text; background-clip:text; color:transparent;
-  text-shadow:0 0 22px rgba(24,196,184,.25);
-}
-.clock small{display:block;color:var(--muted);margin-top:6px}
+.clock{display:grid;place-items:center;min-height:160px;background:#0a1c3c;border-radius:16px;border:1px solid rgba(255,255,255,.06);}
+.clock time{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:52px;background:linear-gradient(90deg,var(--accent),var(--accent-2));-webkit-background-clip:text;color:transparent;}
+.clock small{color:var(--muted);margin-top:6px}
 
 /* Footer */
-footer{
-  max-width:1100px;margin:16px auto 24px; padding:12px 18px;
+footer{max-width:1100px;margin:16px auto 24px;padding:12px 18px;
   display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;
-  background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:14px;
-}
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:14px;}
 .counter{display:flex;align-items:center;gap:8px}
-.dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
 .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);color:var(--muted)}
+.btn{border:1px solid rgba(255,255,255,.12);background:transparent;color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#042422;border:none}
 .muted{color:var(--muted)}
-.btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
-.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#042422; border:none}
 
-/* Report section */
-#report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;display:none}
-#report h2{text-align:center;margin:0 0 16px}
-
-/* Box na wykres (bez narzucania wysokości przez CSS) */
-.chart-box{
-  background:#0d1c38;
-  border-radius:12px;
-  padding:10px;
-}
-.chart-box > canvas{ display:block; width:100% !important; height:auto !important; }
-
-/* Grid wykresów */
+/* Report */
+#report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.06);border-radius:16px;display:none;}
+#report h2{text-align:center;margin-bottom:20px}
 .report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.chart-box{background:#0d1c38;border-radius:12px;padding:10px}
+.chart-box canvas{display:block;width:100%!important;height:360px!important}
+@media(max-width:520px){.chart-box canvas{height:300px!important}}
+.stats{text-align:center;margin-top:20px}
+.stats p{margin:4px 0}
 
-.stats{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
-.stats .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+/* Modale */
+.modal-backdrop{position:fixed;inset:0;background:rgba(5,10,20,.65);
+  display:none;align-items:center;justify-content:center;z-index:2000;padding:16px;}
+.modal-backdrop.show{display:flex}
+.modal{background:#0b162c;color:var(--text);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;max-width:720px;width:100%;padding:18px;box-shadow:var(--shadow);}
+.modal h2{margin-top:0}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.progress{height:12px;border-radius:8px;background:rgba(255,255,255,.08);overflow:hidden;margin:10px 0}
+.progress .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .2s linear}
 </style>
 </head>
 <body>
-<div class="sim-banner" id="simBanner">
-  <span class="sim-badge">🧠 <b>Symulacja szkoleniowa</b></span>
-  <span>To bezpieczna strona edukacyjna — <b>nic złego się nie dzieje</b>. Dane zostają lokalnie.</span>
+
+<div class="sim-banner"><span class="sim-badge">🧠 Symulacja szkoleniowa</span>
+ To bezpieczna strona edukacyjna — <b>nic złego się nie dzieje</b>. Dane zostają lokalnie.
 </div>
 
-<header class="site-header" role="banner">
+<header class="site-header">
   <div class="wrap">
-    <div class="brand">
-      <div class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg>
-      </div>
-      <b>SecCoach</b><span class="muted">• Edukacja</span>
-    </div>
-    <nav id="mainnav" aria-label="Główne menu">
+    <div class="brand"><div class="logo"><svg viewBox="0 0 24 24"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg></div><b>SecCoach</b></div>
+    <nav>
       <a href="#" id="navEasy">O nas</a>
       <a href="#" id="navMedium">Usługi</a>
       <a href="#" id="navHard">Kontakt</a>
@@ -133,37 +114,28 @@ footer{
 </header>
 
 <main>
-  <section class="hero" aria-labelledby="t1">
+  <section class="hero">
     <div>
-      <h1 id="t1">To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
+      <h1>To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
       <p>Jeśli wiadomość budzi wątpliwości: <b>nie klikaj</b> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT.</p>
     </div>
-    <div class="clock" aria-live="polite">
-      <time id="clock">--:--:--</time>
-      <small id="clockDate" class="muted"></small>
-    </div>
+    <div class="clock"><time id="clock">--:--:--</time><small id="clockDate"></small></div>
   </section>
 </main>
 
-<footer role="contentinfo">
-  <div class="counter" aria-live="polite">
-    <span class="dot" aria-hidden="true"></span>
-    <span>Odwiedziny (lokalnie): <b id="visits">0</b></span>
-    <span class="pill">Symulacja</span>
-  </div>
+<footer>
+  <div class="counter"><span class="dot"></span> Odwiedziny: <b id="visits">0</b> <span class="pill">Symulacja</span></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" id="reportBtn">Raport (symulacja)</button>
-    <a class="btn" href="https://kannarro.github.io/Technologie-aplikacji-mobilnych/login.html" target="_blank" rel="noopener">Przejdź do quizu</a>
+    <a class="btn" href="https://kannarro.github.io/Technologie-aplikacji-mobilnych/login.html" target="_blank">Przejdź do quizu</a>
   </div>
-  <div class="muted" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-    <span class="pill">Autorzy</span>
-    <span>Król Damian (54103)</span><span>•</span><span>Angelika Adamczewska (55914)</span>
-    <span>•</span><b>Projekt inżynierski</b> Uniwersytetu WSB Merito w Bydgoszczy © 2025
+  <div class="muted">
+    <b>Autorzy:</b> Król Damian (54103) • Angelika Adamczewska (55914) • Projekt inżynierski WSB Merito Bydgoszcz © 2025
   </div>
 </footer>
 
-<section id="report" aria-labelledby="repTitle">
-  <h2 id="repTitle">📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
+<section id="report">
+  <h2>📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
   <div class="report-grid">
     <div class="chart-box"><canvas id="barChart"></canvas></div>
     <div class="chart-box"><canvas id="lineChart"></canvas></div>
@@ -171,253 +143,71 @@ footer{
     <div class="chart-box"><canvas id="decisionChart"></canvas></div>
   </div>
   <div class="stats">
-    <div class="row">
-      <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
-      <p>🔹 Zdarzenia: <b id="statEvents">0</b></p>
-      <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
-    </div>
-    <div class="row">
-      <p>⏱️ Średni czas decyzji: <b id="avgDecision">—</b></p>
-      <p>⏱️ Mediana czasu decyzji: <b id="medDecision">—</b></p>
-      <p>✅ Zgłoszenia do IT: <b id="countReport">0</b></p>
-      <p>⚠️ Instalacje: <b id="countInstall">0</b></p>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
-      <button class="btn" id="exportCsv">Eksport CSV</button>
-      <button class="btn" id="resetBtn">Reset symulacji</button>
-    </div>
+    <p>🔹 Odwiedziny: <b id="statVisits">0</b> | Zdarzenia: <b id="statEvents">0</b> | Ostatnia aktywność: <b id="statLast">—</b></p>
+    <p>⏱️ Śr. czas decyzji: <b id="avgDecision">—</b> | Mediana: <b id="medDecision">—</b> | ✅ Zgłoszenia: <b id="countReport">0</b> | ⚠️ Instalacje: <b id="countInstall">0</b></p>
+    <button class="btn" id="exportCsv">Eksport CSV</button>
+    <button class="btn" id="resetBtn">Reset</button>
   </div>
 </section>
 
-<div class="modal-backdrop" id="modalRoot" aria-modal="true" role="dialog" aria-live="polite"></div>
+<div class="modal-backdrop" id="modalRoot"></div>
 
 <script>
-/* --- helpers --- */
-const KEY_VIS='seccoach_visits';
-const KEY_LOG='seccoach_log';
-function logEvent(type, note){
-  const arr = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
-  arr.push({ type, when: new Date().toISOString(), ...(note?{note}: {}) });
-  localStorage.setItem(KEY_LOG, JSON.stringify(arr));
-}
-function fmtPL(dt){ return dt.toLocaleString('pl-PL'); }
+const KEY_VIS='seccoach_visits', KEY_LOG='seccoach_log';
+function logEvent(type,note){const arr=JSON.parse(localStorage.getItem(KEY_LOG)||'[]');arr.push({type,when:new Date().toISOString(),...(note?{note}: {})});localStorage.setItem(KEY_LOG,JSON.stringify(arr));}
+function fmtPL(dt){return dt.toLocaleString('pl-PL');}
 
-/* banner offset */
-(function(){ const b=document.getElementById('simBanner');
-  const setH=()=>document.documentElement.style.setProperty('--banner-h',(b?b.offsetHeight:0)+'px');
-  setH(); addEventListener('resize', setH);
-})();
-
-/* clock */
+/* Zegar */
 function updateClock(){
-  const now=new Date(), pad=n=>String(n).padStart(2,'0');
+  const now=new Date(),pad=n=>String(n).padStart(2,'0');
   document.getElementById('clock').textContent=`${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   document.getElementById('clockDate').textContent=now.toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 }
-updateClock(); setInterval(updateClock,1000);
+updateClock();setInterval(updateClock,1000);
 
-/* visits */
-(function(){
-  let v=parseInt(localStorage.getItem(KEY_VIS)||'0',10); v=isNaN(v)?0:v; v++;
-  localStorage.setItem(KEY_VIS', String(v));
-  document.getElementById('visits').textContent=v;
-  logEvent('visit');
-})();
+/* Licznik odwiedzin */
+let v=parseInt(localStorage.getItem(KEY_VIS)||'0',10);if(isNaN(v))v=0;v++;localStorage.setItem(KEY_VIS,String(v));document.getElementById('visits').textContent=v;logEvent('visit');
 
-/* modals */
-const modalRoot=document.getElementById('modalRoot'); let modalOpen=false;
-function openModal(html, onOpen){
-  modalRoot.innerHTML = `<div class="modal">${html}</div>`;
-  modalRoot.classList.add('show'); modalOpen=true;
-  onOpen?.(modalRoot.querySelector('.modal'));
-  modalRoot.onclick=(e)=>{ if(e.target===modalRoot) closeModal(); };
-}
-function closeModal(){ modalRoot.classList.remove('show'); modalRoot.innerHTML=''; modalOpen=false; }
+/* Modal */
+const modalRoot=document.getElementById('modalRoot');
+function openModal(html,cb){modalRoot.innerHTML=`<div class="modal">${html}</div>`;modalRoot.classList.add('show');cb?.(modalRoot.querySelector('.modal'));modalRoot.onclick=e=>{if(e.target===modalRoot)closeModal();};}
+function closeModal(){modalRoot.classList.remove('show');modalRoot.innerHTML='';}
 
-/* intro */
+/* Intro i Instalator */
 function showIntro(){
-  openModal(`
-    <h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2>
-    <p class="muted">Uczysz się bezpiecznych zachowań online. Weryfikuj nadawcę, nie instaluj plików z maila, zgłaszaj podejrzenia do IT.</p>
-    <div class="actions"><button class="btn primary" id="introOk">Rozumiem</button></div>
-  `, m=>m.querySelector('#introOk').addEventListener('click', closeModal));
-  logEvent('intro_shown');
-}
-
-/* installer */
-let installerTimer=null, installerProgress=0, lastLoggedBucket=-1, installerStart=0;
+  openModal(`<h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2><p class="muted">To ćwiczenie z cyberbezpieczeństwa. Zawsze weryfikuj nadawcę i nie instaluj niczego z nieznanych źródeł.</p><div class="actions"><button class="btn primary" id="ok">Rozumiem</button></div>`,m=>m.querySelector('#ok').onclick=()=>{closeModal();if(Date.now()-introStart>=8000)showInstaller();else setTimeout(showInstaller,8000-(Date.now()-introStart));});logEvent('intro_shown');}
+let introStart=Date.now();
 function showInstaller(){
-  openModal(`
-    <span class="badge warn">Symulacja</span>
-    <h2>Aktualizacja systemu — wymagane działanie</h2>
-    <p class="muted">Komputer wymaga natychmiastowej instalacji pakietu bezpieczeństwa. Czy chcesz kontynuować?</p>
-    <div class="progress"><div class="bar" id="installBar"></div></div>
-    <small class="muted">Postęp: <b id="installPct">0%</b></small>
-    <ul class="muted" style="margin-left:18px">
-      <li>Źródło: <b>niezweryfikowane</b> (to tylko test szkoleniowy).</li>
-      <li>Instaluj wyłącznie z oficjalnych źródeł.</li>
-    </ul>
-    <div class="actions">
-      <button class="btn" id="reportIt">Zgłoś incydent do IT</button>
-      <button class="btn primary" id="install">Zainstaluj</button>
-    </div>
-  `, (m)=>{
-    const bar=m.querySelector('#installBar'), pct=m.querySelector('#installPct');
-    installerProgress=0; lastLoggedBucket=-1; installerStart=performance.now();
-    installerTimer=setInterval(()=>{
-      installerProgress+=Math.floor(Math.random()*7)+3;
-      if(installerProgress>100) installerProgress=100;
-      bar.style.width=installerProgress+'%'; pct.textContent=installerProgress+'%';
-      const bucket=Math.floor(installerProgress/20);
-      if(bucket>lastLoggedBucket){ logEvent('installer_progress', String(bucket*20)); lastLoggedBucket=bucket; }
-      if(installerProgress===100){ clearInterval(installerTimer); installerTimer=null; }
-    },200);
-
-    const finalize=(type)=>{
-      if(installerTimer){ clearInterval(installerTimer); installerTimer=null; }
-      const ms = performance.now()-installerStart;
-      logEvent(type, String(Math.round(ms))); closeModal();
-    };
-
-    m.querySelector('#install').addEventListener('click', ()=>{
-      finalize('installer_install');
-      openModal(`<span class="badge danger">Błąd</span><h2>To nie był dobry wybór</h2><p class="muted">Nie instaluj z nieznanych źródeł. Zawsze pytaj IT.</p><div class="actions"><button class="btn primary" id="ack">OK</button></div>`,
-        mm=>mm.querySelector('#ack').addEventListener('click', closeModal));
-    });
-    m.querySelector('#reportIt').addEventListener('click', ()=>{
-      finalize('installer_report');
-      openModal(`<span class="badge">Gratulacje</span><h2>To właściwa reakcja</h2><p class="muted">Zgłaszanie podejrzanych komunikatów do IT to najlepsza praktyka.</p><div class="actions"><button class="btn primary" id="ok">OK</button></div>`,
-        mm=>mm.querySelector('#ok').addEventListener('click', closeModal));
-    });
-  });
-  logEvent('installer_shown');
+  openModal(`<span class="pill">Symulacja</span><h2>Aktualizacja systemu — wymagane działanie</h2><p class="muted">Komputer wymaga natychmiastowej instalacji pakietu bezpieczeństwa. Czy chcesz kontynuować?</p><div class="progress"><div class="bar" id="bar"></div></div><small id="pct">0%</small><div class="actions"><button class="btn" id="report">Zgłoś incydent do IT</button><button class="btn primary" id="install">Zainstaluj</button></div>`,
+  m=>{
+    const bar=m.querySelector('#bar'),pct=m.querySelector('#pct');let p=0,start=performance.now();const t=setInterval(()=>{p+=Math.random()*8+2;if(p>=100){p=100;clearInterval(t);}bar.style.width=p+'%';pct.textContent=p.toFixed(0)+'%';if(p%20<3)logEvent('installer_progress',String(Math.round(p)));},200);
+    function done(type,msg){clearInterval(t);closeModal();logEvent(type,String(Math.round(performance.now()-start)));openModal(msg,m2=>m2.querySelector('button').onclick=closeModal);}
+    m.querySelector('#install').onclick=()=>done('installer_install',`<h2>Błąd</h2><p class="muted">To nie był dobry wybór. Nie instaluj nieznanych plików.</p><div class="actions"><button class="btn primary">OK</button></div>`);
+    m.querySelector('#report').onclick=()=>done('installer_report',`<h2>Świetnie!</h2><p class="muted">Zgłoszenie incydentu do IT to właściwa reakcja.</p><div class="actions"><button class="btn primary">OK</button></div>`);
+  });logEvent('installer_shown');
 }
-
-/* sekwencja modali */
-let secondModalDue=false;
 showIntro();
-setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); }, 8000);
-new MutationObserver(()=>{ if(!modalOpen && secondModalDue){ showInstaller(); } }).observe(modalRoot,{attributes:true,attributeFilter:['class']});
 
-/* edukacja */
-function showEasy(){ openModal(`<span class="badge">Poziom: łatwy</span><h2>Jak rozpoznać podejrzanego maila?</h2><ul class="muted" style="margin-left:18px"><li>Sprawdź <b>adres nadawcy</b>.</li><li>Uważaj na <b>presję czasu</b>.</li><li>Nie klikaj niespodziewanych linków.</li></ul><div class="actions"><button class="btn primary" id="ok">OK</button></div>`, m=>m.querySelector('#ok').addEventListener('click', closeModal)); logEvent('nav_easy');}
-function showMedium(){ openModal(`<span class="badge">Poziom: średni</span><h2>Link wygląda poprawnie? Zweryfikuj</h2><p class="muted">Najedź i sprawdź pełny URL, subdomeny, rozszerzenia plików.</p><div class="actions"><button class="btn primary" id="ok">OK</button></div>`, m=>m.querySelector('#ok').addEventListener('click', closeModal)); logEvent('nav_medium');}
-function showHard(){ openModal(`<span class="badge">Poziom: trudny</span><h2>Po kliknięciu w złośliwy link</h2><ol class="muted" style="margin-left:18px"><li>Odłącz od sieci.</li><li>Nie restartuj.</li><li>Zrób zrzut + zanotuj czas.</li><li>Natychmiast zgłoś do IT / CSIRT.</li></ol><div class="actions"><button class="btn primary" id="ok">Zapamiętam</button></div>`, m=>m.querySelector('#ok').addEventListener('click', closeModal)); logEvent('nav_hard');}
-document.getElementById('navEasy').addEventListener('click',e=>{e.preventDefault();showEasy();});
-document.getElementById('navMedium').addEventListener('click',e=>{e.preventDefault();showMedium();});
-document.getElementById('navHard').addEventListener('click',e=>{e.preventDefault();showHard();});
+/* Edukacyjne sekcje */
+const tips={
+  easy:`<h2>Jak rozpoznać podejrzany mail?</h2><ul class="muted"><li>Sprawdź adres nadawcy</li><li>Uważaj na presję czasu</li><li>Nie klikaj niespodziewanych linków</li></ul>`,
+  med:`<h2>Weryfikuj linki</h2><p class="muted">Najedź na link i sprawdź pełny adres (https, subdomeny, literówki).</p>`,
+  hard:`<h2>Co zrobić po kliknięciu w złośliwy link?</h2><ol class="muted"><li>Odłącz sieć</li><li>Nie restartuj</li><li>Zgłoś incydent do IT</li></ol>`
+};
+document.getElementById('navEasy').onclick=e=>{e.preventDefault();openModal(tips.easy+`<div class="actions"><button class="btn primary">OK</button></div>`,m=>m.querySelector('button').onclick=closeModal);logEvent('nav_easy');};
+document.getElementById('navMedium').onclick=e=>{e.preventDefault();openModal(tips.med+`<div class="actions"><button class="btn primary">OK</button></div>`,m=>m.querySelector('button').onclick=closeModal);logEvent('nav_medium');};
+document.getElementById('navHard').onclick=e=>{e.preventDefault();openModal(tips.hard+`<div class="actions"><button class="btn primary">OK</button></div>`,m=>m.querySelector('button').onclick=closeModal);logEvent('nav_hard');};
 
-/* --- RAPORT & WYKRESY --- */
-let barChart,lineChart,pieChart,decisionChart;
-
-/* obliczenia */
-function computeStats(){
-  const logs = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
-  const counts = { report:0, install:0, easy:0, medium:0, hard:0 };
-  const decisions = [];
+/* Raport i wykresy */
+let charts=[];
+function compute(){
+  const logs=JSON.parse(localStorage.getItem(KEY_LOG)||'[]'),counts={report:0,install:0,easy:0,medium:0,hard:0},dec=[];
   logs.forEach(r=>{
-    if(r.type==='installer_report'){ counts.report++; if(r.note) decisions.push(+r.note); }
-    else if(r.type==='installer_install'){ counts.install++; if(r.note) decisions.push(+r.note); }
-    else if(r.type==='nav_easy') counts.easy++;
-    else if(r.type==='nav_medium') counts.medium++;
-    else if(r.type==='nav_hard') counts.hard++;
+    if(r.type==='installer_report'){counts.report++;if(r.note)dec.push(+r.note);}
+    if(r.type==='installer_install'){counts.install++;if(r.note)dec.push(+r.note);}
+    if(r.type==='nav_easy')counts.easy++;
+    if(r.type==='nav_medium')counts.medium++;
+    if(r.type==='nav_hard')counts.hard++;
   });
-  const byMinute=new Map();
-  logs.forEach(r=>{const t=new Date(r.when); const k=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')} ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`; byMinute.set(k,(byMinute.get(k)||0)+1);});
-  const series=[...byMinute.entries()].sort((a,b)=>a[0].localeCompare(b[0]));
-  const last = logs.length ? fmtPL(new Date(logs.at(-1).when)) : '—';
-  decisions.sort((a,b)=>a-b);
-  const avg = decisions.length ? decisions.reduce((a,b)=>a+b,0)/decisions.length : NaN;
-  const med = decisions.length ? (decisions.length%2 ? decisions[(decisions.length-1)/2] : (decisions[decisions.length/2-1]+decisions[decisions.length/2])/2) : NaN;
-  const buckets={'0–2s':0,'2–5s':0,'5–10s':0,'10–20s':0,'20s+':0};
-  decisions.forEach(ms=>{const s=ms/1000; if(s<=2)buckets['0–2s']++; else if(s<=5)buckets['2–5s']++; else if(s<=10)buckets['5–10s']++; else if(s<=20)buckets['10–20s']++; else buckets['20s+']++;});
-  return {counts,series,last,total:logs.length,avgSec:isNaN(avg)?null:Math.round(avg/100)/10,medSec:isNaN(med)?null:Math.round(med/100)/10,bucketLabels:Object.keys(buckets),bucketValues:Object.values(buckets)};
-}
-
-/* tworzenie wykresów z dynamicznym aspectRatio */
-function makeOpts(kind){
-  const isNarrow = window.matchMedia('(max-width: 520px)').matches;
-  const ratio = isNarrow ? 1 : 16/9;
-  const base = {responsive:true, maintainAspectRatio:true, aspectRatio:ratio, scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}, plugins:{legend:{labels:{color:'#a9b8c9'}}}};
-  if(kind==='pie'){ return {responsive:true, maintainAspectRatio:true, aspectRatio:ratio, plugins:{legend:{labels:{color:'#a9b8c9'}}}}; }
-  if(kind==='bar-nolegend'){ return {...base, plugins:{legend:{display:false}}}; }
-  return base;
-}
-
-function drawCharts(){
-  const s = computeStats();
-  // destroy
-  barChart?.destroy(); lineChart?.destroy(); pieChart?.destroy(); decisionChart?.destroy();
-
-  barChart = new Chart(document.getElementById('barChart').getContext('2d'),{
-    type:'bar',
-    data:{labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
-      datasets:[{label:'Liczba zdarzeń',data:[s.counts.report,s.counts.install,s.counts.easy,s.counts.medium,s.counts.hard],
-      backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6']}]},
-    options:makeOpts('bar-nolegend')
-  });
-
-  lineChart = new Chart(document.getElementById('lineChart').getContext('2d'),{
-    type:'line',
-    data:{labels:s.series.map(x=>x[0]),datasets:[{label:'Aktywność w czasie',data:s.series.map(x=>x[1]),borderColor:'#18c4b8',tension:.3}]},
-    options:makeOpts('line')
-  });
-
-  pieChart = new Chart(document.getElementById('pieChart').getContext('2d'),{
-    type:'pie',
-    data:{labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
-      datasets:[{data:[s.counts.report,s.counts.install,s.counts.easy,s.counts.medium,s.counts.hard],
-      backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6']}]},
-    options:makeOpts('pie')
-  });
-
-  decisionChart = new Chart(document.getElementById('decisionChart').getContext('2d'),{
-    type:'bar',
-    data:{labels:s.bucketLabels,datasets:[{label:'Czas decyzji (liczba osób)',data:s.bucketValues,backgroundColor:'#3ee6b9'}]},
-    options:makeOpts('bar-nolegend')
-  });
-
-  // stats
-  document.getElementById('statVisits').textContent = localStorage.getItem(KEY_VIS) || '0';
-  document.getElementById('statEvents').textContent = String(s.total);
-  document.getElementById('statLast').textContent   = s.last;
-  document.getElementById('avgDecision').textContent = s.avgSec!=null ? (s.avgSec.toFixed(1)+' s') : '—';
-  document.getElementById('medDecision').textContent = s.medSec!=null ? (s.medSec.toFixed(1)+' s') : '—';
-  document.getElementById('countReport').textContent = s.counts.report;
-  document.getElementById('countInstall').textContent = s.counts.install;
-}
-
-/* pokaż raport i narysuj w następnej klatce — gdy element ma rozmiar */
-document.getElementById('reportBtn').addEventListener('click', ()=>{
-  const sec=document.getElementById('report');
-  sec.style.display='block';
-  sec.scrollIntoView({behavior:'smooth'});
-  requestAnimationFrame(drawCharts);
-});
-
-/* re-render przy zmianie rozmiaru/rotacji */
-addEventListener('resize', ()=>{
-  if(document.getElementById('report').style.display==='block'){
-    requestAnimationFrame(drawCharts);
-  }
-});
-
-/* CSV + reset */
-document.getElementById('exportCsv').addEventListener('click', ()=>{
-  const arr = JSON.parse(localStorage.getItem(KEY_LOG)||'[]'); if(!arr.length){ alert('Brak danych do eksportu.'); return; }
-  const headers=['type','when','note'];
-  const rows=arr.map(r=>headers.map(h=>`"${String(r[h]??'').replace(/"/g,'""')}"`).join(','));
-  const csv=[headers.join(','),...rows].join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob);
-  const a=Object.assign(document.createElement('a'),{href:url,download:'seccoach-raport-symulacja.csv'}); document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-document.getElementById('resetBtn').addEventListener('click', ()=>{ if(confirm('Wyczyścić lokalne dane (licznik i logi)?')){ localStorage.removeItem(KEY_LOG); localStorage.removeItem(KEY_VIS); location.reload(); }});
-
-/* kickoff */
-let secondModalDue=false;
-showIntro();
-setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); },8000);
-new MutationObserver(()=>{ if(!modalOpen && secondModalDue){ showInstaller(); } }).observe(modalRoot,{attributes:true,attributeFilter:['class']});
-</script>
-</body>
-</html>
+  const avg=dec.length?dec.reduce((a,b)=>a+b,0)/dec.length:0,med=dec.length?dec.sort((a,b)=>a-b)[Math.floor(dec.length/2)]:0;
+  return{counts,avg,med,last:logs.length?fmtPL(new Date(logs.at(-
