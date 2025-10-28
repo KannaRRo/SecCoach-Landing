@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SecCoach — Symulacja szkoleniowa</title>
 <meta name="description" content="Bezpieczna strona edukacyjna — nic złego się nie dzieje.">
-<!-- Chart.js z CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 :root{
@@ -119,22 +118,24 @@ footer{
 #report{max-width:1100px;margin:40px auto;padding:24px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;display:none}
 #report h2{text-align:center;margin:0 0 10px}
 .report-grid{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
-canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radius:12px;padding:10px}
-/* dodatkowy oddech dla mobile */
-@media (max-width:480px){
-  canvas{min-height:260px;}
+/* gwarantowana, responsywna wysokość wykresów */
+canvas{
+  width:100%!important;
+  height:clamp(260px, 45vw, 420px) !important;
+  background:#0d1c38;
+  border-radius:12px;
+  padding:10px
 }
 .stats{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;}
+.stats .row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
 </style>
 </head>
 <body>
-<!-- Banner -->
 <div class="sim-banner" id="simBanner">
   <span class="sim-badge">🧠 <b>Symulacja szkoleniowa</b></span>
   <span>To bezpieczna strona edukacyjna — <b>nic złego się nie dzieje</b>. Dane zostają lokalnie.</span>
 </div>
 
-<!-- Header -->
 <header class="site-header" role="banner">
   <div class="wrap">
     <div class="brand">
@@ -151,7 +152,6 @@ canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radi
   </div>
 </header>
 
-<!-- Main -->
 <main>
   <section class="hero" aria-labelledby="t1">
     <div>
@@ -165,7 +165,6 @@ canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radi
   </section>
 </main>
 
-<!-- Footer -->
 <footer role="contentinfo">
   <div class="counter" aria-live="polite">
     <span class="dot" aria-hidden="true"></span>
@@ -174,6 +173,7 @@ canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radi
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn primary" id="reportBtn">Raport (symulacja)</button>
+    <a class="btn" href="https://kannarro.github.io/Technologie-aplikacji-mobilnych/login.html" target="_blank" rel="noopener">Przejdź do quizu</a>
   </div>
   <div class="muted" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
     <span class="pill">Autorzy</span>
@@ -182,18 +182,26 @@ canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radi
   </div>
 </footer>
 
-<!-- Report section -->
 <section id="report" aria-labelledby="repTitle">
   <h2 id="repTitle">📊 Analiza zachowań użytkowników w symulacji phishingu</h2>
   <div class="report-grid">
-    <canvas id="barChart" aria-label="Wykres słupkowy — kliknięcia wg kategorii" role="img"></canvas>
-    <canvas id="lineChart" aria-label="Wykres liniowy — aktywność w czasie" role="img"></canvas>
-    <canvas id="pieChart" aria-label="Wykres kołowy — udział procentowy" role="img"></canvas>
+    <canvas id="barChart" aria-label="Kliknięcia wg kategorii" role="img"></canvas>
+    <canvas id="lineChart" aria-label="Aktywność w czasie" role="img"></canvas>
+    <canvas id="pieChart" aria-label="Udział procentowy akcji" role="img"></canvas>
+    <canvas id="decisionChart" aria-label="Rozkład czasu decyzji" role="img"></canvas>
   </div>
   <div class="stats">
-    <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
-    <p>🔹 Liczba zdarzeń: <b id="statEvents">0</b></p>
-    <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
+    <div class="row">
+      <p>🔹 Odwiedziny: <b id="statVisits">0</b></p>
+      <p>🔹 Zdarzenia: <b id="statEvents">0</b></p>
+      <p>🔹 Ostatnia aktywność: <b id="statLast">—</b></p>
+    </div>
+    <div class="row">
+      <p>⏱️ Średni czas decyzji: <b id="avgDecision">—</b></p>
+      <p>⏱️ Mediana czasu decyzji: <b id="medDecision">—</b></p>
+      <p>✅ Zgłoszenia do IT: <b id="countReport">0</b></p>
+      <p>⚠️ Instalacje: <b id="countInstall">0</b></p>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
       <button class="btn" id="exportCsv">Eksport CSV</button>
       <button class="btn" id="resetBtn">Reset symulacji</button>
@@ -201,19 +209,19 @@ canvas{width:100%!important;height:auto!important;background:#0d1c38;border-radi
   </div>
 </section>
 
-<!-- Modal root -->
 <div class="modal-backdrop" id="modalRoot" aria-modal="true" role="dialog" aria-live="polite"></div>
 
 <script>
 /* ---------- Helpers & constants ---------- */
 const KEY_VIS='seccoach_visits';
-const KEY_LOG='seccoach_log'; // tablica zdarzeń {type, when, note?}
+const KEY_LOG='seccoach_log'; // {type, when, note?}
 function logEvent(type, note){
   const arr = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
   arr.push({ type, when: new Date().toISOString(), ...(note?{note}: {}) });
   localStorage.setItem(KEY_LOG, JSON.stringify(arr));
 }
 function fmtPL(dt){ return dt.toLocaleString('pl-PL'); }
+const msToSec = ms => Math.round(ms/100)/10; // 1 miejsce po przecinku
 
 /* ---------- Banner offset ---------- */
 (function(){
@@ -251,7 +259,7 @@ function closeModal(){
   modalRoot.classList.remove('show'); modalRoot.innerHTML=''; modalOpen=false;
 }
 
-/* ---------- Intro modal (immediate) ---------- */
+/* ---------- Intro modal ---------- */
 function showIntro(){
   openModal(`
     <h2>To jest strona szkoleniowa — nic złego się nie dzieje</h2>
@@ -268,8 +276,8 @@ function showIntro(){
   logEvent('intro_shown');
 }
 
-/* ---------- Installer simulation (with progress & two buttons) ---------- */
-let installerTimer=null, installerProgress=0, lastLoggedBucket=-1;
+/* ---------- Installer simulation (progress + decision timer) ---------- */
+let installerTimer=null, installerProgress=0, lastLoggedBucket=-1, installerStart=0;
 function showInstaller(){
   openModal(`
     <span class="badge warn">Symulacja</span>
@@ -291,12 +299,13 @@ function showInstaller(){
     const bar = modal.querySelector('#installBar');
     const pct = modal.querySelector('#installPct');
     installerProgress = 0; lastLoggedBucket = -1;
+    installerStart = performance.now(); // start pomiaru czasu decyzji
+
     installerTimer = setInterval(()=>{
       installerProgress += Math.floor(Math.random()*7)+3; // 3–9% co 200ms
       if(installerProgress>100) installerProgress=100;
       bar.style.width = installerProgress+'%';
       pct.textContent = installerProgress+'%';
-      // log tylko co 20% (0,20,40,60,80,100)
       const bucket = Math.floor(installerProgress/20);
       if(bucket>lastLoggedBucket){
         logEvent('installer_progress', String(bucket*20));
@@ -305,10 +314,15 @@ function showInstaller(){
       if(installerProgress===100){ clearInterval(installerTimer); installerTimer=null; }
     }, 200);
 
-    modal.querySelector('#install').addEventListener('click', ()=>{
+    function finalizeDecision(type){
       if(installerTimer){ clearInterval(installerTimer); installerTimer=null; }
+      const ms = performance.now() - installerStart;
+      logEvent(type, String(Math.round(ms)));   // zapis ms jako tekst
       closeModal();
-      logEvent('installer_install');
+    }
+
+    modal.querySelector('#install').addEventListener('click', ()=>{
+      finalizeDecision('installer_install');
       openModal(`
         <span class="badge danger">Błąd</span>
         <h2>To nie był dobry wybór</h2>
@@ -318,9 +332,7 @@ function showInstaller(){
     });
 
     modal.querySelector('#reportIt').addEventListener('click', ()=>{
-      if(installerTimer){ clearInterval(installerTimer); installerTimer=null; }
-      closeModal();
-      logEvent('installer_report');
+      finalizeDecision('installer_report');
       openModal(`
         <span class="badge">Gratulacje</span>
         <h2>Świetnie — to właściwa reakcja</h2>
@@ -332,73 +344,68 @@ function showInstaller(){
   logEvent('installer_shown');
 }
 
-/* ---------- Sequence: intro immediately, installer at +8s ---------- */
+/* ---------- Sequence: intro now, installer +8s ---------- */
 let secondModalDue=false;
 showIntro();
 setTimeout(()=>{ secondModalDue=true; if(!modalOpen) showInstaller(); }, 8000);
-const modalObserver=new MutationObserver(()=>{
-  if(!modalOpen && secondModalDue){ showInstaller(); modalObserver.disconnect(); }
-});
+const modalObserver=new MutationObserver(()=>{ if(!modalOpen && secondModalDue){ showInstaller(); modalObserver.disconnect(); }});
 modalObserver.observe(modalRoot,{attributes:true,attributeFilter:['class']});
 
-/* ---------- Educational modals for nav ---------- */
-function showEasy(){
-  openModal(`
-    <span class="badge">Poziom: łatwy</span>
-    <h2>Jak rozpoznać podejrzanego maila?</h2>
-    <ul class="muted" style="margin-left:18px">
-      <li>Sprawdź <b>adres nadawcy</b> (literówki, dziwne domeny).</li>
-      <li>Uważaj na <b>presję czasu</b> („pilne”, „natychmiast”).</li>
-      <li>Nie klikaj linków, których się nie spodziewasz.</li>
-    </ul>
-    <div class="actions"><button class="btn primary" id="ok">OK</button></div>
-  `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
-  logEvent('nav_easy');
-}
-function showMedium(){
-  openModal(`
-    <span class="badge">Poziom: średni</span>
-    <h2>Link wygląda poprawnie? Sprawdź, dokąd naprawdę prowadzi</h2>
-    <p class="muted">Najedź na link i <b>odczytaj pełny adres</b>. Zwróć uwagę na:</p>
-    <ul class="muted" style="margin-left:18px">
-      <li>subdomeny udające markę (np. <code>login.bank.example.com</code> vs <code>bank.com</code>),</li>
-      <li>dziwne rozszerzenia plików (<code>.exe</code>, <code>.js</code>, <code>.scr</code>),</li>
-      <li>HTTPS ≠ wiarygodność nadawcy.</li>
-    </ul>
-    <div class="actions"><button class="btn primary" id="ok">OK</button></div>
-  `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
-  logEvent('nav_medium');
-}
-function showHard(){
-  openModal(`
-    <span class="badge">Poziom: trudny</span>
-    <h2>Co zrobić po kliknięciu w złośliwy link?</h2>
-    <ol class="muted" style="margin-left:18px">
-      <li><b>Odłącz</b> urządzenie od sieci (Wi-Fi/kabel).</li>
-      <li><b>Nie</b> restartuj — przekaż do analizy IT.</li>
-      <li>Zrób zrzut ekranu i <b>zanotuj godzinę</b>.</li>
-      <li><b>Natychmiast zgłoś</b> incydent do IT / CSIRT.</li>
-    </ol>
-    <div class="actions"><button class="btn primary" id="ok">Zapamiętam</button></div>
-  `,(m)=>m.querySelector('#ok').addEventListener('click', closeModal));
-  logEvent('nav_hard');
-}
+/* ---------- Educational modals ---------- */
+function showEasy(){ openModal(`
+  <span class="badge">Poziom: łatwy</span>
+  <h2>Jak rozpoznać podejrzanego maila?</h2>
+  <ul class="muted" style="margin-left:18px">
+    <li>Sprawdź <b>adres nadawcy</b> (literówki, dziwne domeny).</li>
+    <li>Uważaj na <b>presję czasu</b> („pilne”, „natychmiast”).</li>
+    <li>Nie klikaj linków, których się nie spodziewasz.</li>
+  </ul>
+  <div class="actions"><button class="btn primary" id="ok">OK</button></div>
+`,(m)=>m.querySelector('#ok').addEventListener('click', closeModal)); logEvent('nav_easy');}
+function showMedium(){ openModal(`
+  <span class="badge">Poziom: średni</span>
+  <h2>Link wygląda poprawnie? Sprawdź, dokąd naprawdę prowadzi</h2>
+  <p class="muted">Najedź na link i <b>odczytaj pełny adres</b>. Zwróć uwagę na:</p>
+  <ul class="muted" style="margin-left:18px">
+    <li>subdomeny udające markę (np. <code>login.bank.example.com</code> vs <code>bank.com</code>),</li>
+    <li>dziwne rozszerzenia plików (<code>.exe</code>, <code>.js</code>, <code>.scr</code>),</li>
+    <li>HTTPS ≠ wiarygodność nadawcy.</li>
+  </ul>
+  <div class="actions"><button class="btn primary" id="ok">OK</button></div>
+`,(m)=>m.querySelector('#ok').addEventListener('click', closeModal)); logEvent('nav_medium');}
+function showHard(){ openModal(`
+  <span class="badge">Poziom: trudny</span>
+  <h2>Co zrobić po kliknięciu w złośliwy link?</h2>
+  <ol class="muted" style="margin-left:18px">
+    <li><b>Odłącz</b> urządzenie od sieci (Wi-Fi/kabel).</li>
+    <li><b>Nie</b> restartuj — przekaż do analizy IT.</li>
+    <li>Zrób zrzut ekranu i <b>zanotuj godzinę</b>.</li>
+    <li><b>Natychmiast zgłoś</b> incydent do IT / CSIRT.</li>
+  </ol>
+  <div class="actions"><button class="btn primary" id="ok">Zapamiętam</button></div>
+`,(m)=>m.querySelector('#ok').addEventListener('click', closeModal)); logEvent('nav_hard');}
 document.getElementById('navEasy').addEventListener('click',(e)=>{e.preventDefault(); showEasy();});
 document.getElementById('navMedium').addEventListener('click',(e)=>{e.preventDefault(); showMedium();});
 document.getElementById('navHard').addEventListener('click',(e)=>{e.preventDefault(); showHard();});
 
 /* ---------- Report (Chart.js) ---------- */
-let barChart,lineChart,pieChart;
+let barChart,lineChart,pieChart,decisionChart;
+
 function computeStats(){
   const logs = JSON.parse(localStorage.getItem(KEY_LOG) || '[]');
+
   const counts = { report:0, install:0, easy:0, medium:0, hard:0 };
+  const decisions = []; // w ms (string w logu)
+
   logs.forEach(r=>{
-    if(r.type==='installer_report') counts.report++;
-    else if(r.type==='installer_install') counts.install++;
+    if(r.type==='installer_report'){ counts.report++; if(r.note) decisions.push(Number(r.note)); }
+    else if(r.type==='installer_install'){ counts.install++; if(r.note) decisions.push(Number(r.note)); }
     else if(r.type==='nav_easy') counts.easy++;
     else if(r.type==='nav_medium') counts.medium++;
     else if(r.type==='nav_hard') counts.hard++;
   });
+
+  // linia (aktywność / min)
   const byMinute = new Map();
   logs.forEach(r=>{
     const t = new Date(r.when);
@@ -408,45 +415,87 @@ function computeStats(){
   });
   const series = Array.from(byMinute.entries()).sort((a,b)=>a[0].localeCompare(b[0]));
   const last = logs.length ? fmtPL(new Date(logs[logs.length-1].when)) : '—';
-  return { counts, series, total: logs.length, last };
+
+  // statystyki decyzji
+  decisions.sort((a,b)=>a-b);
+  const avgMs = decisions.length ? decisions.reduce((a,b)=>a+b,0)/decisions.length : NaN;
+  const medMs = decisions.length ? (decisions.length%2 ? decisions[(decisions.length-1)/2] : (decisions[decisions.length/2-1]+decisions[decisions.length/2])/2) : NaN;
+
+  // rozkład (sekundy)
+  const buckets = { '0–2s':0, '2–5s':0, '5–10s':0, '10–20s':0, '20s+':0 };
+  decisions.forEach(ms=>{
+    const s = ms/1000;
+    if(s<=2) buckets['0–2s']++;
+    else if(s<=5) buckets['2–5s']++;
+    else if(s<=10) buckets['5–10s']++;
+    else if(s<=20) buckets['10–20s']++;
+    else buckets['20s+']++;
+  });
+
+  return {
+    counts, series,
+    total: logs.length, last,
+    avgSec: isNaN(avgMs)? null : msToSec(avgMs*10), // msToSec już zaokrągla
+    medSec: isNaN(medMs)? null : msToSec(medMs*10),
+    bucketLabels: Object.keys(buckets),
+    bucketValues: Object.values(buckets)
+  };
 }
+
 function drawCharts(){
-  const { counts, series, total, last } = computeStats();
+  const s = computeStats();
+
   // bar
   const barCtx = document.getElementById('barChart').getContext('2d');
   if(barChart) barChart.destroy();
   barChart = new Chart(barCtx,{
     type:'bar',
     data:{ labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
-           datasets:[{ label:'Liczba zdarzeń', data:[counts.report,counts.install,counts.easy,counts.medium,counts.hard],
+           datasets:[{ label:'Liczba zdarzeń', data:[s.counts.report,s.counts.install,s.counts.easy,s.counts.medium,s.counts.hard],
                        backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
   });
+
   // line
   const lineCtx = document.getElementById('lineChart').getContext('2d');
   if(lineChart) lineChart.destroy();
   lineChart = new Chart(lineCtx,{
     type:'line',
-    data:{ labels:series.map(s=>s[0]), datasets:[{ label:'Aktywność w czasie', data:series.map(s=>s[1]), borderColor:'#18c4b8', tension:.3 }]},
+    data:{ labels:s.series.map(x=>x[0]), datasets:[{ label:'Aktywność w czasie', data:s.series.map(x=>x[1]), borderColor:'#18c4b8', tension:.3 }]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a9b8c9'}}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
   });
+
   // pie
   const pieCtx = document.getElementById('pieChart').getContext('2d');
   if(pieChart) pieChart.destroy();
   pieChart = new Chart(pieCtx,{
     type:'pie',
     data:{ labels:['Zgłoś do IT','Zainstaluj','Łatwy','Średni','Trudny'],
-           datasets:[{ data:[counts.report,counts.install,counts.easy,counts.medium,counts.hard],
+           datasets:[{ data:[s.counts.report,s.counts.install,s.counts.easy,s.counts.medium,s.counts.hard],
                        backgroundColor:['#18c4b8','#f87171','#3ee6b9','#18c4b8','#0ea5a6'] }]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a9b8c9'}}}}
   });
+
+  // decision distribution
+  const decCtx = document.getElementById('decisionChart').getContext('2d');
+  if(decisionChart) decisionChart.destroy();
+  decisionChart = new Chart(decCtx,{
+    type:'bar',
+    data:{ labels:s.bucketLabels, datasets:[{ label:'Czas decyzji (liczba osób)', data:s.bucketValues, backgroundColor:'#3ee6b9' }] },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#a9b8c9'}},y:{ticks:{color:'#a9b8c9'},beginAtZero:true}}}
+  });
+
   // stats
   document.getElementById('statVisits').textContent = localStorage.getItem(KEY_VIS) || '0';
-  document.getElementById('statEvents').textContent = String(total);
-  document.getElementById('statLast').textContent   = last;
+  document.getElementById('statEvents').textContent = String(s.total);
+  document.getElementById('statLast').textContent   = s.last;
+  document.getElementById('avgDecision').textContent = s.avgSec!=null ? (s.avgSec.toFixed(1)+' s') : '—';
+  document.getElementById('medDecision').textContent = s.medSec!=null ? (s.medSec.toFixed(1)+' s') : '—';
+  document.getElementById('countReport').textContent = s.counts.report;
+  document.getElementById('countInstall').textContent = s.counts.install;
 }
 
-/* pokaż raport po kliknięciu i narysuj wykresy */
+/* raport + rysowanie */
 document.getElementById('reportBtn').addEventListener('click', ()=>{
   const sec = document.getElementById('report');
   sec.style.display='block';
@@ -470,7 +519,7 @@ document.getElementById('resetBtn').addEventListener('click', ()=>{
   if(confirm('Wyczyścić lokalne dane (licznik i logi)?')){ localStorage.removeItem(KEY_LOG); localStorage.removeItem(KEY_VIS); location.reload(); }
 });
 
-/* ---------- Kickoff sequence ---------- */
+/* Kickoff */
 let secondModalReady=false;
 showIntro();
 setTimeout(()=>{ secondModalReady=true; if(!modalOpen) showInstaller(); }, 8000);
