@@ -3,22 +3,37 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SecCoach — Strona edukacyjna</title>
-  <meta name="description" content="Edukacyjny komunikat: nie klikaj w podejrzane linki.">
+  <title>SecCoach — Strona edukacyjna (symulacja)</title>
+  <meta name="description" content="Symulacja szkoleniowa: bezpieczny test świadomości. Nic złego się nie dzieje.">
   <style>
     :root{
       --bg:#0b1326; --panel:#0f1a34; --card:#0e1630;
       --text:#e7f0fa; --muted:#a9b8c9;
       --accent:#18c4b8; --accent-2:#3ee6b9;
+      --warn:#f59e0b; --danger:#ef4444;
       --shadow:0 10px 30px rgba(2,6,23,.45);
+      --banner-h:40px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#081326,#0a1530);color:var(--text)}
 
+    /* --- Sticky SIMULATION banner --- */
+    .sim-banner{
+      position:fixed; inset:auto 0 0 0; top:0; height:var(--banner-h); z-index:1200;
+      display:flex; align-items:center; justify-content:center; gap:8px; padding:0 12px;
+      background:linear-gradient(90deg, rgba(24,196,184,.15), rgba(62,230,185,.15));
+      backdrop-filter:saturate(140%) blur(6px);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      color:#dff6f3; font-size:14px;
+    }
+    .sim-banner b{color:#c7fff6}
+    .sim-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(24,196,184,.5);background:rgba(24,196,184,.12);font-size:12px}
+    .sim-banner small{color:var(--muted)}
+
     /* --- Sticky header --- */
     .site-header{
-      position:sticky; top:0; z-index:1000;
+      position:sticky; top:var(--banner-h); z-index:1000;
       background:rgba(10,20,40,.85);
       backdrop-filter:saturate(140%) blur(8px);
       border-bottom:1px solid rgba(255,255,255,.06);
@@ -31,16 +46,15 @@
     nav{margin-left:auto;display:flex;gap:10px;align-items:center}
     nav a{color:#dfeafb;text-decoration:none;font-size:14px;opacity:.9;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.06)}
     nav a:hover{opacity:1;background:rgba(255,255,255,.05)}
-    /* hamburger */
     .burger{display:none;margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.12);color:#dfeafb;border-radius:8px;padding:8px 10px}
     @media (max-width:760px){
-      nav{display:none;position:absolute;left:0;right:0;top:56px;background:rgba(10,20,40,.98);padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
+      nav{display:none;position:absolute;left:0;right:0;top:calc(var(--banner-h) + 56px);background:rgba(10,20,40,.98);padding:10px 18px;border-bottom:1px solid rgba(255,255,255,.06)}
       nav.open{display:flex;flex-direction:column}
       .burger{display:block}
     }
 
     /* --- Main content --- */
-    main{max-width:1100px;margin:0 auto;padding:18px}
+    main{max-width:1100px;margin:0 auto;padding:calc(18px + var(--banner-h)) 18px 18px}
     .hero{
       background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));
       border:1px solid rgba(255,255,255,.06);
@@ -67,6 +81,20 @@
     }
     .clock small{display:block;color:var(--muted);margin-top:6px}
 
+    /* --- Info section --- */
+    .learn{
+      margin-top:16px;
+      display:grid; gap:14px;
+      grid-template-columns:1fr 1fr;
+    }
+    .card{
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:14px; padding:14px;
+    }
+    .card h3{margin:0 0 8px;font-size:18px}
+    @media (max-width:860px){ .learn{grid-template-columns:1fr} }
+
     /* --- Footer with counter --- */
     footer{
       max-width:1100px;margin:16px auto 24px; padding:12px 18px;
@@ -77,8 +105,10 @@
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
     .pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);color:var(--muted)}
     .muted{color:var(--muted)}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#042422; border:none}
 
-    /* --- Modal --- */
+    /* --- Modals --- */
     .modal-backdrop{
       position:fixed; inset:0; background:rgba(5,10,20,.65); display:none;
       align-items:center; justify-content:center; z-index:2000; padding:16px;
@@ -90,17 +120,27 @@
     .modal h2{margin:0 0 8px;font-size:20px}
     .modal ul{margin:8px 0 0 18px;color:var(--muted)}
     .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
-    .btn{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#042422; border:none}
     .modal-backdrop.show{display:flex}
+
+    /* --- Report modal wider --- */
+    #reportBackdrop .modal{max-width:860px}
+    canvas{display:block; width:100%}
+
+    /* a11y */
     .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   </style>
 </head>
 <body>
+  <!-- Sticky SIMULATION banner -->
+  <div class="sim-banner" role="note" aria-live="polite">
+    <span class="sim-badge" title="Symulacja/test — cel edukacyjny">🧠 <b>Symulacja szkoleniowa</b></span>
+    <span>To bezpieczny test świadomości. <b>Nic złego się nie dzieje</b> — dane zostają w tej przeglądarce.</span>
+  </div>
+
   <!-- Sticky header -->
   <header class="site-header" role="banner">
     <div class="wrap">
-      <div class="brand">
+      <div class="brand" id="brand">
         <div class="logo" aria-hidden="true">
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#18c4b8" d="M12 2l7 20-7-4-7 4z"/></svg>
         </div>
@@ -108,9 +148,9 @@
       </div>
       <button class="burger" id="burger" aria-expanded="false" aria-controls="mainnav">Menu</button>
       <nav id="mainnav" aria-label="Główne menu">
-        <a href="#">O nas</a>
-        <a href="#">Usługi</a>
-        <a href="#">Kontakt</a>
+        <a href="#" class="sim-link" data-sim="1" title="Symulacja — kliknięcie zostanie zarejestrowane">O nas</a>
+        <a href="#" class="sim-link" data-sim="1" title="Symulacja — kliknięcie zostanie zarejestrowane">Usługi</a>
+        <a href="#" class="sim-link" data-sim="1" title="Symulacja — kliknięcie zostanie zarejestrowane">Kontakt</a>
       </nav>
     </div>
   </header>
@@ -118,12 +158,33 @@
   <main>
     <section class="hero" aria-labelledby="t1">
       <div>
-        <h1 id="t1">To jest strona edukacyjna — zachowaj czujność</h1>
-        <p>Jeśli wiadomość budzi wątpliwości: **nie klikaj** linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT.</p>
+        <h1 id="t1">To jest <u>symulacja szkoleniowa</u> — zachowaj czujność</h1>
+        <p>Jeśli wiadomość budzi wątpliwości: <b>nie klikaj</b> linków, nie pobieraj załączników, sprawdź nadawcę i zgłoś do IT. Ten test jest <b>bezpieczny</b> i służy nauce.</p>
       </div>
       <div class="clock" aria-live="polite">
         <time id="clock">--:--:--</time>
         <small id="clockDate" class="muted"></small>
+      </div>
+    </section>
+
+    <!-- Educational quick tips -->
+    <section class="learn" aria-labelledby="edu">
+      <h2 id="edu" class="sr-only">Wskazówki bezpieczeństwa</h2>
+      <div class="card">
+        <h3>Jak rozpoznać phishing?</h3>
+        <ul class="muted">
+          <li>Nietypowa domena, literówki w adresie nadawcy.</li>
+          <li>Presja czasu („pilne”, „natychmiast”).</li>
+          <li>Prośby o dane logowania, przelew, instalację pliku.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Co zrobić po kliknięciu?</h3>
+        <ul class="muted">
+          <li>Odłącz się od sieci (w prawdziwej sytuacji).</li>
+          <li>Zrób zrzut ekranu i <b>zgłoś do IT</b>.</li>
+          <li>Nie instaluj oprogramowania z linków w mailu.</li>
+        </ul>
       </div>
     </section>
   </main>
@@ -133,19 +194,23 @@
       <span class="dot" aria-hidden="true"></span>
       <span>Odwiedziny (na tym urządzeniu): <b id="visits">0</b></span>
       <span class="pill" title="Informacja lokalna">Lokalny licznik</span>
+      <span class="pill" title="To test/symulacja — bezpieczne">Symulacja</span>
     </div>
-    <div class="muted">© 2025 SecCoach • Strona demonstracyjna</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <button class="btn" id="reportBtn" title="Symulacja/test — lokalne statystyki">Raport (symulacja)</button>
+      <button class="btn" id="exportCsvQuick" title="Eksport lokalnych logów do CSV">Eksport CSV</button>
+    </div>
   </footer>
 
-  <!-- Modal -->
+  <!-- Base modal (educational initial — shown only if needed elsewhere) -->
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="mTitle" aria-describedby="mDesc">
     <div class="modal">
       <h2 id="mTitle">Uwaga: nie klikaj w podejrzane linki</h2>
-      <p id="mDesc" class="muted">Ta strona jest elementem szkoleniowym. Zwracaj uwagę na:</p>
+      <p id="mDesc" class="muted">To jest <b>symulacja szkoleniowa</b>. Celem jest nauka bez ryzyka. Nic złego się nie dzieje.</p>
       <ul>
-        <li>nietypową domenę lub literówki w adresie nadawcy,</li>
-        <li>presję czasu („pilne”, „natychmiast”),</li>
-        <li>prośby o dane logowania, przelew lub instalację pliku.</li>
+        <li>sprawdź nadawcę i domenę,</li>
+        <li>uważaj na presję czasu,</li>
+        <li>nie instaluj niczego z maila.</li>
       </ul>
       <div class="actions">
         <button class="btn" id="moreInfoBtn">Więcej wskazówek</button>
@@ -154,54 +219,433 @@
     </div>
   </div>
 
+  <!-- Report Modal (symulacja/test) -->
+  <div class="modal-backdrop" id="reportBackdrop" role="dialog" aria-modal="true" aria-labelledby="rTitle" aria-describedby="rDesc" style="display:none">
+    <div class="modal">
+      <h2 id="rTitle">Raport końcowy — <span class="pill">symulacja/test</span></h2>
+      <p id="rDesc" class="muted">To ćwiczebna wizualizacja. Dane są wyłącznie lokalne (ta przeglądarka), nic nie jest wysyłane.</p>
+      <div style="display:grid; gap:12px; grid-template-columns:1fr 1fr">
+        <div class="card">
+          <b>Podsumowanie</b>
+          <ul class="muted" style="margin:8px 0 0 18px">
+            <li>ⓘ <b>Symulacja</b> — nic złego się nie dzieje.</li>
+            <li>Odwiedziny (lokalnie): <b id="rVisits">0</b></li>
+            <li>Unikalne sesje (przybliżenie): <b id="rSessions">0</b></li>
+            <li>Łączna liczba interakcji: <b id="rEvents">0</b></li>
+          </ul>
+          <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+            <button class="btn" id="exportCsvBtn">Eksport CSV</button>
+            <button class="btn" id="clearLogsBtn" title="Czyści WYŁĄCZNIE lokalne logi">Wyczyść logi (lokalnie)</button>
+          </div>
+        </div>
+        <div class="card">
+          <b>Kliknięcia wg wariantu (słupki)</b>
+          <canvas id="chartBar" width="360" height="220" aria-label="Wykres słupkowy — kliknięcia wg wariantu (symulacja)" role="img"></canvas>
+        </div>
+        <div class="card" style="grid-column:1 / -1">
+          <b>Aktywność w czasie (linia)</b>
+          <canvas id="chartLine" width="760" height="220" aria-label="Wykres liniowy — aktywność w czasie (symulacja)" role="img"></canvas>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:14px">
+        <span class="muted" aria-live="polite">Dane: tylko z tej przeglądarki. Test edukacyjny.</span>
+        <button class="btn primary" id="reportCloseBtn">Zamknij</button>
+      </div>
+    </div>
+  </div>
+
 <script>
-/* --- hamburger --- */
+/* ---------- UI: burger ---------- */
 const burger = document.getElementById('burger');
 const nav = document.getElementById('mainnav');
-burger.addEventListener('click', ()=>{
-  const open = nav.classList.toggle('open');
-  burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-});
+if(burger){
+  burger.addEventListener('click', ()=>{
+    const open = nav.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+}
 
-/* --- clock --- */
+/* ---------- Clock ---------- */
 function updateClock(){
   const now = new Date();
   const pad = n => String(n).padStart(2,'0');
   const t = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   document.getElementById('clock').textContent = t;
-  document.getElementById('clockDate').textContent = now.toLocaleDateString('pl-PL', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('clockDate').textContent =
+    now.toLocaleDateString('pl-PL', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
 }
 updateClock();
 setInterval(updateClock, 1000);
 
-/* --- visits counter (local only) --- */
-const KEY = 'seccoach_visits';
+/* ---------- Visits counter (local only) ---------- */
+const KEY_VISITS = 'seccoach_visits';
 try{
-  let n = parseInt(localStorage.getItem(KEY) || '0', 10);
+  let n = parseInt(localStorage.getItem(KEY_VISITS) || '0', 10);
   n = isNaN(n) ? 0 : n;
   n += 1;
-  localStorage.setItem(KEY, String(n));
+  localStorage.setItem(KEY_VISITS, String(n));
   document.getElementById('visits').textContent = n;
 }catch(e){
   document.getElementById('visits').textContent = '—';
 }
 
-/* --- modal (shows once per session) --- */
+/* ---------- Base modal once-per-session (kept as intro) ---------- */
 const backdrop = document.getElementById('modalBackdrop');
 const okBtn = document.getElementById('okBtn');
 const moreInfoBtn = document.getElementById('moreInfoBtn');
 const SEEN = sessionStorage.getItem('seccoach_modal_seen');
 
-function openModal(){ backdrop.classList.add('show'); }
-function closeModal(){ backdrop.classList.remove('show'); sessionStorage.setItem('seccoach_modal_seen','1'); }
+function openBaseModal(){ backdrop.classList.add('show'); }
+function closeBaseModal(){ backdrop.classList.remove('show'); sessionStorage.setItem('seccoach_modal_seen','1'); }
+if(!SEEN){ openBaseModal(); }
+if(okBtn) okBtn.addEventListener('click', closeBaseModal);
+if(backdrop) backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeBaseModal(); });
+if(moreInfoBtn){
+  moreInfoBtn.addEventListener('click', ()=>{
+    alert("Szybkie wskazówki (symulacja):\n1) Sprawdź nadawcę i domenę.\n2) Nie klikaj nieznanych linków.\n3) Nie otwieraj podejrzanych załączników.\n4) Zgłaszaj podejrzane wiadomości do IT.\nTo test edukacyjny — nic złego się nie dzieje.");
+  });
+}
 
-if(!SEEN){ openModal(); }
+/* ---------- Simulation sequence (3 variants) ---------- */
+const MAX_SHOWS_SESSION = 3;      // ile razy w sesji
+const MAX_SHOWS_DEVICE  = 3;      // ile razy na urządzeniu
+const INTERVALS_MS = [0, 8000, 16000]; // odstępy między modalami
+const KEY_SESSION_COUNT = 'seccoach_modal_session_count';
+const KEY_DEVICE_COUNT  = 'seccoach_modal_device_count';
+const KEY_CLICK_LOG     = 'seccoach_click_log';
 
-okBtn.addEventListener('click', closeModal);
-backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeModal(); });
-moreInfoBtn.addEventListener('click', ()=>{
-  alert("Szybkie wskazówki:\n1) Sprawdź nadawcę i domenę.\n2) Nie klikaj nieznanych linków.\n3) Nie otwieraj podejrzanych załączników.\n4) Zgłaszaj podejrzane wiadomości do IT.");
+function getSessionCount(){ return parseInt(sessionStorage.getItem(KEY_SESSION_COUNT)||'0',10); }
+function setSessionCount(n){ sessionStorage.setItem(KEY_SESSION_COUNT,String(n)); }
+function getDeviceCount(){ return parseInt(localStorage.getItem(KEY_DEVICE_COUNT)||'0',10); }
+function setDeviceCount(n){ localStorage.setItem(KEY_DEVICE_COUNT, String(n)); }
+
+function logClick(record){
+  try{
+    const raw = localStorage.getItem(KEY_CLICK_LOG);
+    const arr = raw ? JSON.parse(raw) : [];
+    arr.push(record);
+    localStorage.setItem(KEY_CLICK_LOG, JSON.stringify(arr));
+  }catch(e){ console.warn('Log error', e); }
+}
+
+// modal generator
+function createSimModal(variant){
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop sim show';
+  backdrop.style.display = 'flex';
+
+  const title = variant==='warn' ? 'Uwaga: możliwy phishing — nie klikaj'
+              : variant==='update' ? 'Aktualizacja systemu — wymagane działanie'
+              : 'System: wykryto szyfrowanie plików';
+  const text = variant==='warn'
+    ? 'To jest symulacja szkoleniowa — bezpieczny test świadomości. Zwróć uwagę na nietypową domenę, presję czasu, prośby o dane.'
+    : variant==='update'
+    ? 'Symulacja: fałszywa aktualizacja. Nie instaluj oprogramowania z linków mailowych. Nic złego się nie dzieje.'
+    : 'Symulacja: komunikat o „szyfrowaniu” plików. To tylko ćwiczenie edukacyjne — nic złego się nie dzieje.';
+
+  backdrop.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true">
+      <h2>${title}</h2>
+      <p class="muted">${text}</p>
+      ${variant==='encrypt' ? `
+      <div aria-hidden="true" style="margin-top:12px">
+        <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:8px">
+          <div style="height:10px;border-radius:8px;background:rgba(255,255,255,.06);overflow:hidden">
+            <div id="fakeProgress" style="width:0%;height:10px;border-radius:8px;background:linear-gradient(90deg,var(--danger),#f87171)"></div>
+          </div>
+          <small class="muted">Postęp (symulacja): <span id="fakeProgressText">0%</span></small>
+        </div>
+      </div>` : ''}
+      <div class="actions" style="margin-top:14px">
+        <button class="btn sim-close">Zamknij</button>
+        <button class="btn primary sim-action">${variant==='warn' ? 'Rozumiem' : variant==='update' ? 'Zainstaluj (symulacja)' : 'Co robić?'}</button>
+      </div>
+      <small class="muted">To jest <b>test/symulacja</b>. Dane pozostają lokalnie w Twojej przeglądarce.</small>
+    </div>
+  `;
+
+  // handlers
+  backdrop.querySelector('.sim-close').addEventListener('click', ()=>{ closeSimModal(backdrop, variant); });
+  backdrop.querySelector('.sim-action').addEventListener('click', ()=>{ onSimAction(backdrop, variant); });
+  backdrop.addEventListener('click', (e)=>{ if(e.target === backdrop) closeSimModal(backdrop, variant); });
+
+  // fake progress for encrypt
+  if(variant==='encrypt'){
+    const bar = () => {
+      const el = backdrop.querySelector('#fakeProgress');
+      const txt= backdrop.querySelector('#fakeProgressText');
+      if(!el || !txt) return;
+      let p = 0;
+      const t = setInterval(()=>{
+        p += Math.floor(Math.random()*7)+3; if(p>100) p=100;
+        el.style.width = p + '%';
+        txt.textContent = p + '%';
+        if(p>=100) clearInterval(t);
+      }, 400);
+    };
+    setTimeout(bar, 250);
+  }
+  return backdrop;
+}
+
+function openSimModalVariant(variant){
+  const sCount = getSessionCount();
+  const dCount = getDeviceCount();
+  if(sCount >= MAX_SHOWS_SESSION || dCount >= MAX_SHOWS_DEVICE) return;
+  setSessionCount(sCount + 1);
+  setDeviceCount(dCount + 1);
+  document.body.appendChild(createSimModal(variant));
+}
+
+function showDebrief(variant){
+  const lines = {
+    warn:    'Dobra praktyka: sprawdzaj nadawcę i domenę, nie podawaj haseł z linków w mailu, zgłoś do IT.',
+    update:  'Fałszywe aktualizacje to częsta metoda ataku. Instaluj tylko z zaufanych źródeł. Zgłoś do IT.',
+    encrypt: 'W prawdziwym incydencie: odłącz sieć, nie restartuj komputera, natychmiast zgłoś do IT.'
+  };
+  alert('Symulacja — krótkie wskazówki:\n\n' + lines[variant] + '\n\nTo ćwiczenie edukacyjne. Nic złego się nie dzieje.');
+}
+
+function closeSimModal(node, variant){
+  node.remove();
+  setTimeout(()=>showDebrief(variant), 150);
+}
+
+function onSimAction(node, variant){
+  const rec = {
+    when: new Date().toISOString(),
+    variant, url: location.href,
+    userAgent: navigator.userAgent,
+    note: 'sim-action'
+  };
+  logClick(rec);
+  node.remove();
+  showDebrief(variant);
+}
+
+// schedule sequence on load (warn -> update -> encrypt)
+function scheduleModals(){
+  const variants = ['warn','update','encrypt'];
+  variants.forEach((v, i)=>{
+    const delay = INTERVALS_MS[i] || i*8000;
+    setTimeout(()=>openSimModalVariant(v), delay);
+  });
+}
+if(!sessionStorage.getItem(KEY_SESSION_COUNT)){
+  scheduleModals();
+}
+
+/* ---------- Intercept link clicks with data-sim / .sim-link ---------- */
+document.addEventListener('click', (e)=>{
+  const a = e.target.closest && e.target.closest('a');
+  if(!a) return;
+  if(a.dataset.sim === '1' || a.classList.contains('sim-link')){
+    const rec = {when:new Date().toISOString(), href:a.href, note:'link-click'};
+    logClick(rec);
+    e.preventDefault();
+    openSimModalVariant('warn');
+  }
 });
+
+/* ---------- Report (symulacja) ---------- */
+(() => {
+  const KEY_CLICK_LOG      = 'seccoach_click_log';
+  const KEY_SESSION_COUNT  = 'seccoach_modal_session_count';
+  const KEY_DEVICE_COUNT   = 'seccoach_modal_device_count';
+
+  const btnReport   = document.getElementById('reportBtn');
+  const btnExportQuick = document.getElementById('exportCsvQuick');
+  const backdrop    = document.getElementById('reportBackdrop');
+  const btnClose    = document.getElementById('reportCloseBtn');
+  const btnExport   = document.getElementById('exportCsvBtn');
+  const btnClear    = document.getElementById('clearLogsBtn');
+
+  const elVisits    = document.getElementById('rVisits');
+  const elSessions  = document.getElementById('rSessions');
+  const elEvents    = document.getElementById('rEvents');
+
+  const canvasBar   = document.getElementById('chartBar');
+  const canvasLine  = document.getElementById('chartLine');
+
+  function parseLogs(){
+    try { return JSON.parse(localStorage.getItem(KEY_CLICK_LOG) || '[]'); }
+    catch { return []; }
+  }
+  function getVisits(){
+    const n = parseInt(localStorage.getItem(KEY_VISITS)||'0',10);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function getApproxSessions(){
+    const s = parseInt(sessionStorage.getItem(KEY_SESSION_COUNT)||'0',10);
+    const d = parseInt(localStorage.getItem(KEY_DEVICE_COUNT)||'0',10);
+    return Math.max(isNaN(s)?0:s, isNaN(d)?0:d);
+  }
+
+  function exportLogsCSV(){
+    const arr = parseLogs();
+    if(!arr.length){ alert('Brak zarejestrowanych interakcji (symulacja).'); return; }
+    const headers = Array.from(arr.reduce((set, r)=>{ Object.keys(r).forEach(k=>set.add(k)); return set; }, new Set()));
+    const rows = arr.map(r => headers.map(h => `"${String(r[h]??'').replace(/"/g,'""')}"`).join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = Object.assign(document.createElement('a'), {href:url, download:'seccoach-logs-symulacja.csv'});
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+  function clearLogs(){
+    if(!confirm('Czy na pewno wyczyścić lokalne logi (symulacja/test)?')) return;
+    localStorage.removeItem(KEY_CLICK_LOG);
+    drawReport();
+  }
+
+  function drawBarChart(ctx, labels, values){
+    const W = ctx.canvas.width, H = ctx.canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.font = '12px Inter, system-ui, sans-serif';
+    ctx.fillStyle = '#a9b8c9';
+
+    const max = Math.max(1, ...values);
+    const pad = {l:40, r:10, t:10, b:28};
+    const cw = (W - pad.l - pad.r) / labels.length;
+    const gh = (H - pad.t - pad.b);
+
+    ctx.globalAlpha = .8;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, pad.t);
+    ctx.lineTo(pad.l, H - pad.b);
+    ctx.lineTo(W - pad.r, H - pad.b);
+    ctx.strokeStyle = 'rgba(255,255,255,.2)';
+    ctx.stroke();
+
+    labels.forEach((lab, i)=>{
+      const v = values[i];
+      const h = max ? Math.round((v/max)*gh) : 0;
+      const x = pad.l + i*cw + cw*0.15;
+      const y = H - pad.b - h;
+      const bw = cw*0.7;
+
+      const g = ctx.createLinearGradient(0, y, 0, y+h);
+      g.addColorStop(0, '#18c4b8'); g.addColorStop(1, '#3ee6b9');
+      ctx.fillStyle = g;
+      ctx.fillRect(x, y, bw, h);
+
+      ctx.fillStyle = '#e7f0fa';
+      ctx.globalAlpha = 1;
+      ctx.fillText(String(v), x + bw/2 - ctx.measureText(String(v)).width/2, y - 6);
+
+      ctx.fillStyle = '#a9b8c9';
+      const tw = ctx.measureText(lab).width;
+      ctx.fillText(lab, x + bw/2 - tw/2, H - pad.b + 16);
+    });
+  }
+
+  function drawLineChart(ctx, points){
+    const W = ctx.canvas.width, H = ctx.canvas.height;
+    ctx.clearRect(0,0,W,H);
+    ctx.font = '12px Inter, system-ui, sans-serif';
+
+    if(points.length === 0){
+      ctx.fillStyle = '#a9b8c9';
+      ctx.fillText('Brak danych (symulacja).', 12, 20);
+      return;
+    }
+
+    const pad = {l:50, r:10, t:10, b:28};
+    const times = points.map(p=>p.x.getTime());
+    const ys    = points.map(p=>p.y);
+    const tMin  = Math.min(...times), tMax = Math.max(...times);
+    const yMin  = 0, yMax = Math.max(1, ...ys);
+    const xScale = t => pad.l + (W - pad.l - pad.r) * ((t - tMin) / (tMax - tMin || 1));
+    const yScale = v => (H - pad.b) - (H - pad.t - pad.b) * ((v - yMin) / (yMax - yMin || 1));
+
+    ctx.strokeStyle = 'rgba(255,255,255,.12)';
+    ctx.beginPath();
+    for(let i=0;i<=4;i++){
+      const y = pad.t + (H - pad.t - pad.b) * (i/4);
+      ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y);
+    }
+    ctx.stroke();
+
+    const grad = ctx.createLinearGradient(0, pad.t, 0, H - pad.b);
+    grad.addColorStop(0, '#3ee6b9'); grad.addColorStop(1, '#18c4b8');
+    ctx.strokeStyle = grad; ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    points.sort((a,b)=>a.x-b.x).forEach((p,i)=>{
+      const X = xScale(p.x.getTime()), Y = yScale(p.y);
+      if(i===0) ctx.moveTo(X,Y); else ctx.lineTo(X,Y);
+    });
+    ctx.stroke();
+
+    ctx.fillStyle = '#e7f0fa';
+    points.forEach((p,i)=>{
+      const X = xScale(p.x.getTime()), Y = yScale(p.y);
+      ctx.beginPath(); ctx.arc(X, Y, 2.5, 0, Math.PI*2); ctx.fill();
+      if(i===0 || i===points.length-1){
+        const lbl = p.x.toLocaleString('pl-PL', { hour:'2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'});
+        const tw = ctx.measureText(lbl).width;
+        ctx.fillStyle = '#a9b8c9'; ctx.fillText(lbl, X - tw/2, H - 8); ctx.fillStyle = '#e7f0fa';
+      }
+    });
+  }
+
+  function computeStats(){
+    const logs = parseLogs();
+    const summary = { visits: getVisits(), events: logs.length, sessionsApprox: getApproxSessions() };
+    const byVariant = { warn:0, update:0, encrypt:0, other:0 };
+    logs.forEach(r=>{
+      const v = (r.variant||'').toLowerCase();
+      if(v in byVariant) byVariant[v]++; else byVariant.other++;
+    });
+    const bucket = new Map(); // YYYY-MM-DDTHH:MM -> count
+    logs.forEach(r=>{
+      const t = new Date(r.when||Date.now());
+      const key = t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')+
+                  'T'+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');
+      bucket.set(key, (bucket.get(key)||0)+1);
+    });
+    const series = Array.from(bucket.entries()).sort((a,b)=>a[0].localeCompare(b[0]))
+      .map(([k,v])=>({ x:new Date(k+':00'), y:v }));
+    return { summary, byVariant, series };
+  }
+
+  function drawReport(){
+    const { summary, byVariant, series } = computeStats();
+    document.getElementById('rVisits').textContent   = String(summary.visits);
+    document.getElementById('rSessions').textContent = String(summary.sessionsApprox);
+    document.getElementById('rEvents').textContent   = String(summary.events);
+
+    drawBarChart(canvasBar.getContext('2d'), ['warn','update','encrypt','inne'],
+      [byVariant.warn, byVariant.update, byVariant.encrypt, byVariant.other]);
+
+    drawLineChart(canvasLine.getContext('2d'), series);
+  }
+
+  function openReport(){ backdrop.style.display='flex'; backdrop.classList.add('show'); drawReport(); }
+  function closeReport(){ backdrop.classList.remove('show'); backdrop.style.display='none'; }
+
+  if(btnReport) btnReport.addEventListener('click', openReport);
+  if(btnClose) btnClose.addEventListener('click', closeReport);
+  if(backdrop) backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) closeReport(); });
+  if(btnExport) btnExport.addEventListener('click', exportLogsCSV);
+  if(btnExportQuick) btnExportQuick.addEventListener('click', exportLogsCSV);
+  if(btnClear) btnClear.addEventListener('click', clearLogs);
+})();
+
+/* ---------- Easter-egg admin trigger (opcjonalny): kliknij logo 5×, otworzy raport ---------- */
+(() => {
+  const brand = document.getElementById('brand'); let taps=0; let tRef=null;
+  if(!brand) return;
+  brand.addEventListener('click', ()=>{
+    taps++; clearTimeout(tRef);
+    tRef=setTimeout(()=>{taps=0;}, 1000);
+    if(taps>=5){
+      taps=0;
+      const btn = document.getElementById('reportBtn');
+      if(btn) btn.click();
+    }
+  });
+})();
 </script>
 </body>
 </html>
